@@ -1,0 +1,461 @@
+{
+  "generated_at": "2026-09-10T13:55:00Z",
+  "modules": [
+    {
+      "name": "app-shell",
+      "path": "src/App.tsx",
+      "purpose": "Bootstrap React, preloader, composição da página, header sticky e footer",
+      "primary_files": [
+        "src/main.tsx",
+        "src/App.tsx",
+        "src/components/nature/Preloader.tsx",
+        "src/components/nature/Header.tsx",
+        "src/components/nature/Footer.tsx",
+        "src/components/nature/NatureLogo.tsx"
+      ],
+      "functions": [
+        {
+          "name": "App",
+          "file": "src/App.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Preloader.exit",
+          "file": "src/components/nature/Preloader.tsx",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "AppIntroState",
+          "fields": [
+            { "name": "ready", "type": "boolean", "required": true },
+            { "name": "introVisible", "type": "boolean", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Preloader é pulado se prefers-reduced-motion ou URL com hash",
+          "location": "src/App.tsx:20-24",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Header usa histerese 80/40px para estado sólido",
+          "location": "src/components/nature/Header.tsx:20-22",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Timeout de assets do preloader 1800ms; safety finish 2800ms",
+          "location": "src/components/nature/Preloader.tsx:72-73",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["lead-capture", "hero", "content-data", "motion"],
+      "algorithms": ["preloader-ready-gate", "header-scroll-hysteresis"],
+      "complexity": "medium"
+    },
+    {
+      "name": "hero",
+      "path": "src/components/nature/Hero.tsx",
+      "purpose": "Primeira dobra persuasiva com imagem full-bleed, headline, CTA e fatos",
+      "primary_files": ["src/components/nature/Hero.tsx"],
+      "functions": [
+        {
+          "name": "Hero",
+          "file": "src/components/nature/Hero.tsx",
+          "params": ["ready?: boolean"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [],
+      "business_rules": [
+        {
+          "description": "CTA principal abre o modal de lead; não navega para plantas",
+          "location": "src/components/nature/Hero.tsx:147-149",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["app-shell", "lead-capture", "motion"],
+      "algorithms": ["splittext-entrance", "facts-scrolltrigger", "hero-parallax"],
+      "complexity": "medium"
+    },
+    {
+      "name": "marketing-sections",
+      "path": "src/components/nature",
+      "purpose": "Seções narrativas e de prova: essência, pilares, plantas, lazer, arquitetura e confiança",
+      "primary_files": [
+        "src/components/nature/LifeMoment.tsx",
+        "src/components/nature/Pillars.tsx",
+        "src/components/nature/FloorPlans.tsx",
+        "src/components/nature/Amenities.tsx",
+        "src/components/nature/Architecture.tsx",
+        "src/components/nature/Trust.tsx"
+      ],
+      "functions": [
+        {
+          "name": "FloorPlans",
+          "file": "src/components/nature/FloorPlans.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Amenities.move",
+          "file": "src/components/nature/Amenities.tsx",
+          "params": ["direction: -1 | 1"],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "FloorPlanOption",
+          "fields": [
+            { "name": "area", "type": "string", "required": true },
+            { "name": "image", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "AmenitySpace",
+          "fields": [
+            { "name": "name", "type": "string", "required": true },
+            { "name": "image", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "CTA de plantas dispara CustomEvent nature:plan com a metragem ativa antes de abrir o modal",
+          "location": "src/components/nature/FloorPlans.tsx:47-51",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Listener de nature:plan no LeadForm foi removido — evento atualmente sem consumidor",
+          "location": "src/components/nature/LeadForm.tsx",
+          "confidence": "inferred"
+        }
+      ],
+      "dependencies": ["content-data", "lead-capture", "motion"],
+      "algorithms": ["plan-selector", "amenities-rail-scroll"],
+      "complexity": "medium"
+    },
+    {
+      "name": "location-map",
+      "path": "src/components/nature/Location.tsx",
+      "purpose": "Seção de localização com mapa Leaflet lazy, endereço, quotes e proximidades",
+      "primary_files": [
+        "src/components/nature/Location.tsx",
+        "src/components/nature/LocationMapLazy.tsx",
+        "src/components/nature/LocationMap.tsx"
+      ],
+      "functions": [
+        {
+          "name": "Location",
+          "file": "src/components/nature/Location.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "LocationMapLazy",
+          "file": "src/components/nature/LocationMapLazy.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "LocationMap",
+          "file": "src/components/nature/LocationMap.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "FitPoints",
+          "file": "src/components/nature/LocationMap.tsx",
+          "params": [],
+          "returns": "null",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Interaction",
+          "file": "src/components/nature/LocationMap.tsx",
+          "params": ["active: boolean"],
+          "returns": "null",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "createPointIcon",
+          "file": "src/components/nature/LocationMap.tsx",
+          "params": ["Icon: LucideIcon", "label: string"],
+          "returns": "L.DivIcon",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "MapPointOfInterest",
+          "fields": [
+            { "name": "name", "type": "string", "required": true },
+            { "name": "category", "type": "string", "required": true },
+            { "name": "distance", "type": "string", "required": true },
+            { "name": "icon", "type": "LucideIcon", "required": true },
+            { "name": "position", "type": "[number, number]", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "ProximityItem",
+          "fields": [
+            { "name": "label", "type": "string", "required": true },
+            { "name": "text", "type": "string", "required": true },
+            { "name": "distance", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Mapa só carrega via dynamic import após IntersectionObserver com rootMargin 700px",
+          "location": "src/components/nature/LocationMapLazy.tsx:11-17",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Interação Leaflet começa desabilitada até clique no gate",
+          "location": "src/components/nature/LocationMap.tsx:44-54",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "POIs do mapa e proximity de siteData são fontes paralelas (duplicação)",
+          "location": "src/components/nature/LocationMap.tsx:10-17 vs src/data/nature.ts:57-88",
+          "confidence": "inferred"
+        },
+        {
+          "description": "mapEmbedUrl em siteData não é consumido pelo mapa Leaflet atual",
+          "location": "src/data/nature.ts:53-54",
+          "confidence": "inferred"
+        }
+      ],
+      "dependencies": ["content-data", "lead-capture", "motion"],
+      "algorithms": ["lazy-map-intersection", "interaction-gate", "fit-bounds-pois"],
+      "complexity": "medium"
+    },
+    {
+      "name": "lead-capture",
+      "path": "src/context/LeadModalContext.tsx",
+      "purpose": "Funil de conversão: modal, CTAs, FAB/bubble e seção de contato",
+      "primary_files": [
+        "src/context/LeadModalContext.tsx",
+        "src/components/nature/LeadModal.tsx",
+        "src/components/nature/SectionCta.tsx",
+        "src/components/nature/WhatsAppFab.tsx",
+        "src/components/nature/LeadForm.tsx"
+      ],
+      "functions": [
+        {
+          "name": "LeadModalProvider",
+          "file": "src/context/LeadModalContext.tsx",
+          "params": ["children: ReactNode"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "useLeadModal",
+          "file": "src/context/LeadModalContext.tsx",
+          "params": [],
+          "returns": "LeadModalContextValue",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "LeadModal.validate",
+          "file": "src/components/nature/LeadModal.tsx",
+          "params": [],
+          "returns": "FieldErrors",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "LeadModal.onSubmit",
+          "file": "src/components/nature/LeadModal.tsx",
+          "params": ["event: FormEvent"],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "WhatsAppFab.scheduleShow",
+          "file": "src/components/nature/WhatsAppFab.tsx",
+          "params": ["delayMs: number"],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "SectionCta",
+          "file": "src/components/nature/SectionCta.tsx",
+          "params": ["children", "onClick?", "className?"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "LeadPayload",
+          "fields": [
+            { "name": "name", "type": "string", "required": true },
+            { "name": "email", "type": "string", "required": true },
+            { "name": "phone", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "FieldErrors",
+          "fields": [
+            { "name": "name", "type": "string", "required": false },
+            { "name": "email", "type": "string", "required": false },
+            { "name": "phone", "type": "string", "required": false }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Telefone deve ter exatamente 11 dígitos; payload prefixa +55",
+          "location": "src/components/nature/LeadModal.tsx:45-61",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Submit válido apenas console.log — sem API/CRM",
+          "location": "src/components/nature/LeadModal.tsx:62-63",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Bubble: max 3 shows, 10s primeira, 6s visível, 52s reaparece; dismiss em sessionStorage",
+          "location": "src/components/nature/WhatsAppFab.tsx:25-28",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "FAB e bubble abrem LeadModal, não WhatsApp; footer ainda usa wa.me",
+          "location": "src/components/nature/WhatsAppFab.tsx:283",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["motion"],
+      "algorithms": ["lead-form-validation", "bubble-session-scheduler", "fab-scrolltrigger-gate"],
+      "complexity": "high"
+    },
+    {
+      "name": "motion",
+      "path": "src/motion",
+      "purpose": "Infraestrutura GSAP e orquestração de animações da landing",
+      "primary_files": [
+        "src/motion/gsap.ts",
+        "src/motion/usePageMotion.ts",
+        "src/motion/RevealText.tsx",
+        "src/lib/gsap.ts",
+        "src/hooks/useScrollDirection.ts"
+      ],
+      "functions": [
+        {
+          "name": "usePageMotion",
+          "file": "src/motion/usePageMotion.ts",
+          "params": ["scope: RefObject<HTMLDivElement | null>", "ready: boolean"],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "RevealText",
+          "file": "src/motion/RevealText.tsx",
+          "params": ["text: string", "as?: ElementType", "className?: string", "delay?: number"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "useScrollDirection",
+          "file": "src/hooks/useScrollDirection.ts",
+          "params": ["options?: { collapseAfter?, delta?, solidAt? }"],
+          "returns": "{ scrollingDown, scrollY, isSolid }",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [],
+      "business_rules": [
+        {
+          "description": "Animações de página só rodam com ready=true e prefers-reduced-motion: no-preference",
+          "location": "src/motion/usePageMotion.ts:11-13",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "natureEase CustomEase 0.23,1,0.32,1",
+          "location": "src/motion/gsap.ts:7",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "useScrollDirection existe mas Header usa histerese própria — hook potencialmente ocioso",
+          "location": "src/hooks/useScrollDirection.ts",
+          "confidence": "inferred"
+        }
+      ],
+      "dependencies": [],
+      "algorithms": ["page-scroll-reveals", "splittext-headings", "nature-custom-ease"],
+      "complexity": "medium"
+    },
+    {
+      "name": "content-data",
+      "path": "src/data/nature.ts",
+      "purpose": "Fonte estática de copy e mídia comercial do empreendimento",
+      "primary_files": ["src/data/nature.ts"],
+      "functions": [],
+      "entities": [
+        {
+          "name": "SiteData",
+          "fields": [
+            { "name": "hero", "type": "object", "required": true },
+            { "name": "lifeMoment", "type": "object", "required": true },
+            { "name": "pillars", "type": "object", "required": true },
+            { "name": "location", "type": "object", "required": true },
+            { "name": "floorPlans", "type": "object", "required": true },
+            { "name": "amenities", "type": "object", "required": true },
+            { "name": "architecture", "type": "object", "required": true },
+            { "name": "trust", "type": "object", "required": true },
+            { "name": "cta", "type": "object", "required": true },
+            { "name": "footer", "type": "object", "required": true },
+            { "name": "contact", "type": "object", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Conteúdo estático no bundle; sem CMS/i18n runtime",
+          "location": "src/data/nature.ts",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "privacyHref ainda aponta para #",
+          "location": "src/data/nature.ts:190",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Grafia do endereço diverge (Hildegardo no footer vs Hidelgardo em location)",
+          "location": "src/data/nature.ts:52 vs 182",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "siteData.cta parece pouco ou não referenciado pelos CTAs de modal atuais",
+          "location": "src/data/nature.ts:172-178",
+          "confidence": "inferred"
+        }
+      ],
+      "dependencies": [],
+      "algorithms": [],
+      "complexity": "low"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Apartamentos de 2 e 3 quartos no Alto, em Teresópolis. Conheça o Nature Residencial, suas metragens, arquitetura e espaços de lazer.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  },
+  "title": "Nature Residencial | Alto, Teresópolis",
+  "language": "pt-BR",
+  "icons": {
+    "icon": "/brand/nature-symbol.svg"
+  },
+  "openGraph": {
+    "image": "https://wp.residencialnature.com.br/wp-content/uploads/2026/03/fachadas-nature.png"
+  }
+}

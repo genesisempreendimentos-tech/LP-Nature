@@ -1,0 +1,29 @@
+@theme {
+  --color-nature-background: #f5f3ec;
+  --color-nature-background-alt: #e9ecdf;
+  --color-nature-surface: #faf9f3;
+  --color-nature-text: #263e32;
+  --color-nature-text-muted: #64705e;
+  --color-nature-primary: #304b3a;
+  --color-nature-accent: #788262;
+  --color-nature-border: #d3d6ca;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Manrope", sans-serif;
+  --font-nav: "Montserrat", system-ui, -apple-system, sans-serif;
+  --spacing-section: clamp(4rem, 7vw, 7rem);
+}
+
+:root {
+  --color-bg: #f9f8f6;
+  --color-bg-alt: #f0efeb;
+  --color-surface: #ffffff;
+  --color-text: #1a1c1a;
+  --color-muted: #757470;
+  --color-accent: #5c6450;
+  --font-nav: "Montserrat", system-ui, -apple-system, sans-serif;
+  --header-color-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --header-layout-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --header-color-duration: 240ms;
+  --header-layout-duration: 700ms;
+}
+

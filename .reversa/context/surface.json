@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-09-10T13:21:00Z",
+  "project_root": "c:\\Users\\bs902\\Downloads\\Landing Pages\\Nature - Pagina de Vendas",
+  "languages": [
+    { "name": "TypeScript", "extensions": [".ts", ".tsx"], "file_count": 30 },
+    { "name": "CSS", "extensions": [".css"], "file_count": 2 },
+    { "name": "Markdown", "extensions": [".md"], "file_count": 7 },
+    { "name": "JSON", "extensions": [".json"], "file_count": 6 },
+    { "name": "HTML", "extensions": [".html"], "file_count": 1 },
+    { "name": "SVG", "extensions": [".svg"], "file_count": 4 }
+  ],
+  "primary_language": "TypeScript",
+  "frameworks": [
+    { "name": "React", "version": "19.0.0", "source": "package.json" },
+    { "name": "Vite", "version": "8.0.5", "source": "package.json" },
+    { "name": "Tailwind CSS", "version": "4.0.0", "source": "package.json" },
+    { "name": "GSAP", "version": "3.15.0", "source": "package.json" },
+    { "name": "Leaflet", "version": "1.9.4", "source": "package.json" },
+    { "name": "Radix UI Dialog", "version": "1.1.23", "source": "package.json" }
+  ],
+  "package_manager": "pnpm",
+  "entry_points": [
+    { "path": "index.html", "type": "html_shell" },
+    { "path": "src/main.tsx", "type": "app_entry" },
+    { "path": "src/App.tsx", "type": "app_composition" },
+    { "path": "vite.config.ts", "type": "build_config" }
+  ],
+  "config_files": [
+    "package.json",
+    "tsconfig.json",
+    "vite.config.ts",
+    ".mise.toml",
+    ".figma/make/site.json",
+    "AGENTS.md",
+    "PRODUCT.md"
+  ],
+  "ci_cd": [],
+  "docker": {},
+  "database_hints": [],
+  "test_framework": null,
+  "test_file_count": 0,
+  "modules": [
+    "app-shell",
+    "hero",
+    "marketing-sections",
+    "location-map",
+    "lead-capture",
+    "motion",
+    "content-data"
+  ],
+  "total_files": 62,
+  "organization_suggestion": {
+    "granularity": "feature",
+    "rationale": "SPA de landing sem pastas de domínio nem roteamento de API; a organização natural segue as seções/features de conversão da página.",
+    "signals": [
+      {
+        "type": "section_components",
+        "evidence": [
+          "src/components/nature/Hero.tsx",
+          "src/components/nature/FloorPlans.tsx",
+          "src/components/nature/LeadModal.tsx",
+          "src/App.tsx"
+        ]
+      }
+    ],
+    "features": [
+      "preloader",
+      "hero-header",
+      "life-moment",
+      "pillars",
+      "location-map",
+      "floor-plans",
+      "amenities",
+      "architecture",
+      "trust",
+      "lead-capture",
+      "footer",
+      "page-motion"
+    ]
+  }
+}
