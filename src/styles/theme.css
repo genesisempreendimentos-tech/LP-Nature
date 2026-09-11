@@ -5,6 +5,8 @@
   --color-nature-text: #263e32;
   --color-nature-text-muted: #64705e;
   --color-nature-primary: #304b3a;
+  /* content accent (ênfase tipográfica). NOME Tailwind: manter —
+     gera selection:bg-nature-accent / bg-nature-accent. NÃO renomear. */
   --color-nature-accent: #788262;
   --color-nature-border: #d3d6ca;
   --font-display: "Cormorant Garamond", Georgia, serif;
@@ -19,6 +21,12 @@
   --color-surface: #ffffff;
   --color-text: #1a1c1a;
   --color-muted: #757470;
+  /* Alias semântico = nature-accent / content (mesmo hex). Uso futuro via var();
+     não substitui --color-nature-accent no @theme. */
+  --color-content-accent: #788262;
+  /* interactive accent (CTA / FAB / header). Alias explícito de intenção. */
+  --color-interactive-accent: #5c6450;
+  /* Alias legado: consumidores existentes usam var(--color-accent). */
   --color-accent: #5c6450;
   --font-nav: "Montserrat", system-ui, -apple-system, sans-serif;
   --header-color-ease: cubic-bezier(0.23, 1, 0.32, 1);

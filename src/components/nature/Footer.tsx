@@ -136,7 +136,13 @@ export function Footer() {
 
         <div className="footer-bottom">
           <p>
-            <a href={footer.privacyHref}>Política de Privacidade</a>
+            <a
+              href={footer.privacyHref}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Política de Privacidade
+            </a>
             <span aria-hidden="true"> | </span>
             © {year} desenvolvido por Gênesis Empreendimentos
           </p>

@@ -1,5 +1,20 @@
 {
   "version": 1,
-  "allowLegacyEdits": false,
-  "allowedPaths": []
+  "allowLegacyEdits": true,
+  "allowedPaths": [
+    "src/styles/theme.css",
+    "src/index.css",
+    "src/components/nature/LeadModal.tsx",
+    "src/context/LeadModalContext.tsx",
+    "src/App.tsx",
+    "src/lib/**",
+    "api/**",
+    "package.json",
+    "vite.config.ts",
+    ".env.example",
+    "apps/**",
+    "packages/**",
+    "pnpm-workspace.yaml",
+    "tsconfig.base.json"
+  ]
 }

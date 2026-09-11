@@ -1,0 +1,52 @@
+---
+import { siteData } from "../../data/siteData"
+import SectionCta from "./SectionCta"
+
+const { architecture } = siteData
+const headlineLines = architecture.headline.split("\n")
+---
+
+<section class="architecture-section" data-marketing-reveal data-section="arquitetura">
+  <div class="shell">
+    <div class="architecture-heading">
+      <p class="eyebrow">05 / ARQUITETURA E PAISAGEM</p>
+      <h2 data-motion-heading>
+        {headlineLines[0]}
+        <br />
+        {headlineLines[1]}
+      </h2>
+      <div class="architecture-copy">
+        <SectionCta client:load>Ver o projeto arquitetônico completo</SectionCta>
+      </div>
+    </div>
+
+    <div class="architecture-gallery">
+      <figure class="architecture-image architecture-image-main">
+        <img src={architecture.facades[0]} alt="Fachada oficial do Nature Residencial" loading="lazy" />
+        <figcaption><span>01</span>Fachada principal</figcaption>
+      </figure>
+      <figure class="architecture-image architecture-image-detail">
+        <img src={architecture.facades[1]} alt="Detalhe arquitetônico oficial do Nature Residencial" loading="lazy" />
+        <figcaption><span>02</span>Volumes e materiais</figcaption>
+      </figure>
+      <figure class="architecture-image architecture-image-landscape">
+        <img src={architecture.facades[2]} alt="Paisagismo integrado do Nature Residencial" loading="lazy" />
+        <figcaption><span>03</span>Arquitetura integrada</figcaption>
+      </figure>
+    </div>
+
+    <div class="architecture-principles">
+      <p>
+        <span>O PROJETO</span>Uma presença contemporânea, desenhada para pertencer à paisagem.
+      </p>
+      {
+        architecture.tags.map((tag, index) => (
+          <div>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{tag.toLowerCase()}</strong>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

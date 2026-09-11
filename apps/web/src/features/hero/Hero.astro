@@ -1,0 +1,100 @@
+---
+/**
+ * Hero literal — markup/CSS do legado (Hero.tsx).
+ * Header fica no shell (DEV: Header fora do Hero no Astro).
+ * CTA hidratado; facts usam reveal via appReady.
+ */
+import HeroCta from "./HeroCta"
+---
+
+<section id="inicio" class="nature-hero" data-hero-ready>
+  <div class="hero-stage">
+    <div class="hero-background">
+      <img
+        class="hero-background-image"
+        src="https://wp.residencialnature.com.br/wp-content/uploads/2026/03/fachadas-nature.png"
+        alt="Fachada do Nature Residencial, com varandas e paisagismo"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-content shell">
+      <p class="hero-kicker eyebrow">
+        <span class="status-dot"></span> ALTO, TERESÓPOLIS · RJ
+      </p>
+      <h1 class="hero-title">
+        O essencial.
+        <br /> Em um <em>novo padrão.</em>
+      </h1>
+      <div class="hero-bottom">
+        <p class="hero-description">
+          Um lugar para respirar fundo.
+          <br />E viver tudo o que importa.
+        </p>
+        <div class="hero-actions">
+          <HeroCta client:load />
+          <a
+            class="hero-explore"
+            href="#nature"
+            aria-label="Descubra o Nature"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 5v14"></path>
+              <path d="m19 12-7 7-7-7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-facts" data-section="hero-facts">
+    <div class="hero-facts-inner shell">
+      <span class="facts-rule" aria-hidden="true"></span>
+      <p class="fact-item">
+        <strong>2 e 3</strong>
+        <span>quartos</span>
+      </p>
+      <p class="fact-item">
+        <strong>
+          56,60 a 292,49 <small>m²</small>
+        </strong>
+        <span>espaços para a sua vida</span>
+      </p>
+      <p class="fact-item">
+        <strong>Alto</strong>
+        <span>o seu endereço em Teresópolis</span>
+      </p>
+      <a class="fact-item" href="#lazer">
+        Natureza, lazer
+        <br />e conveniência
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M7 7h10v10"></path>
+          <path d="M7 17 17 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

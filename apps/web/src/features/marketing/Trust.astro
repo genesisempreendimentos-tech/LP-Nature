@@ -1,0 +1,57 @@
+---
+import { siteData } from "../../data/siteData"
+
+const { trust } = siteData
+const headlineLines = trust.headline.split("\n")
+---
+
+<section class="trust-section" data-marketing-reveal data-section="confianca">
+  <div class="shell">
+    <div class="trust-heading">
+      <p class="eyebrow">06 / QUEM CONSTRÓI ESSA HISTÓRIA</p>
+      <h2 data-motion-heading>
+        {headlineLines.map((line, i) => (
+          <>
+            {i > 0 && <br />}
+            {line}
+          </>
+        ))}
+      </h2>
+      <div class="trust-intro">
+        <p>Qualidade acompanhada em cada etapa, do projeto à entrega do seu novo endereço.</p>
+        <strong>Gênesis Empreendimentos</strong>
+      </div>
+    </div>
+
+    <div class="trust-certifications">
+      <div class="trust-certifications-title">
+        <span>QUALIDADE COMPROVADA</span>
+        <h3>Certificações que sustentam cada escolha.</h3>
+      </div>
+      {
+        trust.certifications.map((certification, index) => (
+          <article class="trust-certificate">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div class="trust-seal">
+              <img
+                src={certification.image}
+                alt={`Selo ${certification.name}`}
+                loading="lazy"
+              />
+            </div>
+            <div>
+              <h4>{certification.name}</h4>
+              <p>{certification.description}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="trust-proofline">
+      <p><span>EXPERIÊNCIA</span>Atuação consolidada na Região Serrana</p>
+      <p><span>PARCERIA</span>Caixa Econômica Federal</p>
+      <p><span>COMPROMISSO</span>Assistência também após a entrega</p>
+    </div>
+  </div>
+</section>

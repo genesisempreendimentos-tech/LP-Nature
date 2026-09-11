@@ -186,7 +186,7 @@ export const siteData = {
     facebook: "https://www.facebook.com/genesisempreendimentos",
     linkedin: "https://www.linkedin.com/company/genesis-empreendimentos",
     instagramHandle: "@genesisempreendimentos",
-    privacyHref: "#",
+    privacyHref: "https://genesisempreendimentos.com.br/politicas",
     disclaimer:
       "As imagens são meramente ilustrativas e não constituem oferta. Plantas, especificações, acabamentos e condições comerciais podem sofrer alterações sem aviso prévio. Consulte a disponibilidade real de unidades e a documentação do empreendimento junto à equipe comercial da Gênesis Empreendimentos.",
   },

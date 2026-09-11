@@ -1,0 +1,46 @@
+---
+import SectionCta from "./SectionCta"
+
+/**
+ * Seção contato final (legado LeadForm.tsx).
+ * Não é formulário embutido — CTA abre o modal compartilhado.
+ */
+---
+
+<section
+  id="contato"
+  class="contact-section"
+  data-marketing-reveal
+  data-section="contato"
+>
+  <div class="shell contact-layout">
+    <div class="contact-copy">
+      <p class="eyebrow">06 / VAMOS CONVERSAR</p>
+      <h2 data-motion-heading>
+        Seu novo capítulo
+        <br /> tem um lugar
+        <br /> <em>para começar.</em>
+      </h2>
+      <p>
+        Conheça as configurações do Nature e dê o próximo passo para viver a
+        serra do seu jeito.
+      </p>
+    </div>
+
+    <div class="contact-cta-panel">
+      <p class="contact-cta-kicker">PRÓXIMO PASSO</p>
+      <p class="contact-cta-lead">
+        Fale com a equipe comercial e consulte plantas e unidades disponíveis no
+        Alto.
+      </p>
+      <SectionCta client:load className="contact-cta">
+        Consultar plantas e unidades
+      </SectionCta>
+      <p class="contact-cta-meta">
+        Nature Residencial
+        <br />
+        Alto · Teresópolis — RJ
+      </p>
+    </div>
+  </div>
+</section>

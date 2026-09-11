@@ -1,0 +1,423 @@
+/* Hero literal — extraído de src/index.css (nature-hero / hero-stage) */
+.status-dot {
+  width: 5px;
+  height: 5px;
+  background: #7f885e;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  background: #2b4738;
+  color: #fffdf6;
+  padding: 19px 25px;
+  font-size: 12px;
+  border: 0;
+  cursor: pointer;
+  transition: background 200ms ease, transform 160ms var(--ease-out, ease);
+}
+
+.button-primary:hover {
+  background: #49604a;
+}
+
+.button-primary:active {
+  transform: scale(0.98);
+}
+
+.button-primary svg,
+.hero-explore svg {
+  transition: transform 200ms var(--ease-out, ease);
+}
+
+.hero-stage {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: max(740px, 100svh);
+  overflow: hidden;
+  background: #263e32;
+  color: #faf9ef;
+  padding-top: calc(108px + env(safe-area-inset-top, 0px));
+}
+
+.hero-background,
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 54%;
+}
+
+.nature-hero.is-ready .hero-background-image {
+  animation: hero-image-settle 1.5s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.nature-hero.is-ready .hero-kicker,
+.nature-hero.is-ready .hero-title,
+.nature-hero.is-ready .hero-description,
+.nature-hero.is-ready .hero-actions {
+  animation: hero-rise 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.nature-hero.is-ready .hero-title {
+  animation-delay: 0.12s;
+}
+
+.nature-hero.is-ready .hero-description {
+  animation-delay: 0.4s;
+}
+
+.nature-hero.is-ready .hero-actions {
+  animation-delay: 0.46s;
+}
+
+.nature-hero.is-ready .hero-kicker {
+  animation-delay: 0.4s;
+}
+
+/* GSAP/SplitText assume o controle — evita animação CSS em paralelo. */
+.nature-hero[data-hero-motion="gsap"].is-ready .hero-background-image,
+.nature-hero[data-hero-motion="gsap"].is-ready .hero-kicker,
+.nature-hero[data-hero-motion="gsap"].is-ready .hero-title,
+.nature-hero[data-hero-motion="gsap"].is-ready .hero-description,
+.nature-hero[data-hero-motion="gsap"].is-ready .hero-actions {
+  animation: none;
+}
+
+@keyframes hero-image-settle {
+  from {
+    transform: scale(1.065);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-shade {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(17, 34, 25, 0.75),
+      rgba(17, 34, 25, 0.29) 60%,
+      rgba(17, 34, 25, 0.08)
+    ),
+    linear-gradient(0deg, rgba(15, 28, 20, 0.88), transparent 70%),
+    linear-gradient(180deg, rgba(15, 28, 20, 0.45), transparent 25%);
+}
+
+.hero-content {
+  position: relative;
+  margin-top: auto;
+  padding-top: 100px;
+  padding-bottom: 55px;
+}
+
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  color: #e1e4ce;
+  font-family: var(--font-nav);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero-kicker .status-dot {
+  background: #dde2bd;
+}
+
+.hero-title {
+  max-width: 1150px;
+  font: 400 clamp(72px, 7.8vw, 122px) / 1.04 var(--font-display);
+  letter-spacing: -0.045em;
+  margin: 0;
+  text-wrap: initial;
+}
+
+/* SplitText (mask: lines) — evita corte do descender */
+.hero-title > div {
+  padding-bottom: 0.09em;
+  margin-bottom: -0.09em;
+}
+
+/* Papel do itálico no hero escuro — não é --color-content-accent */
+.hero-title em {
+  color: #d9ddc0;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.hero-bottom {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 35px;
+}
+
+.hero-stage .hero-description {
+  margin: 0;
+  color: #e0e4d8;
+  line-height: 1.85;
+  font-size: 15px;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.hero-stage .button-primary {
+  background: #eff0dd;
+  color: #263e32;
+  font-weight: 600;
+  padding: 21px 26px;
+  gap: 50px;
+}
+
+.hero-stage .hero-explore {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0;
+  border: 1px solid #e5e8d665;
+  border-radius: 50%;
+  color: #f5f3ec;
+}
+
+.hero-facts {
+  position: relative;
+  margin-top: 0;
+  color: #263e32;
+  background: #f5f3ec;
+}
+
+.hero-facts-inner {
+  display: grid;
+  grid-template-columns: 1fr 1.55fr 1.15fr 1.1fr;
+  align-items: center;
+  position: relative;
+  padding-block: 38px 40px;
+}
+
+/* Linha superior fina — faixa creme sob o hero */
+.facts-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #d3d6ca;
+  pointer-events: none;
+}
+
+.hero-facts .fact-item,
+.hero-facts p {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 4px 0 4px 36px;
+  border-right: 0;
+  min-width: 0;
+}
+
+/* Divisores verticais com respiro (como na referência) */
+.hero-facts .fact-item + .fact-item::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 1px;
+  background: #d3d6ca;
+}
+
+.hero-facts-inner > p.fact-item:first-of-type {
+  padding-left: 0;
+}
+
+.hero-facts strong {
+  font: 400 clamp(24px, 2.1vw, 28px) / 1.12 var(--font-display);
+  letter-spacing: -0.02em;
+  color: #263e32;
+  font-weight: 400;
+}
+
+.hero-facts strong small {
+  font-size: 0.68em;
+  letter-spacing: 0;
+}
+
+.hero-facts p > span,
+.hero-facts .fact-item > span {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #687263;
+}
+
+.hero-facts > .hero-facts-inner > a.fact-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-left: 36px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #263e32;
+  text-decoration: none;
+}
+
+.hero-facts > .hero-facts-inner > a.fact-item svg {
+  flex: 0 0 auto;
+  color: #263e32;
+  stroke-width: 1.5;
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-stage .button-primary:hover {
+    background: #d8dec3;
+  }
+
+  .button-primary:hover svg {
+    transform: translate(2px, -2px);
+  }
+
+  .hero-explore:hover svg {
+    transform: translateY(3px);
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-stage {
+    min-height: max(740px, 100svh);
+    padding-top: calc(96px + env(safe-area-inset-top, 0px));
+  }
+
+  .hero-background-image {
+    object-position: 58% center;
+  }
+
+  .hero-shade {
+    background:
+      linear-gradient(0deg, #13261cef, #19302333 95%),
+      linear-gradient(90deg, #11261980, transparent);
+  }
+
+  .hero-content {
+    padding-top: 110px;
+    padding-bottom: 32px;
+  }
+
+  .hero-kicker {
+    font-size: 8px;
+    margin-bottom: 22px;
+  }
+
+  .hero-title {
+    font-size: clamp(52px, 12.5vw, 86px);
+    line-height: 1.06;
+    letter-spacing: -0.045em;
+  }
+
+  .hero-bottom {
+    flex-direction: column;
+    align-items: start;
+    gap: 25px;
+    margin-top: 28px;
+  }
+
+  .hero-stage .hero-description {
+    font-size: 13px;
+  }
+
+  .hero-actions {
+    width: 100%;
+    gap: 15px;
+  }
+
+  .hero-stage .button-primary {
+    flex: 1;
+    gap: 18px;
+    padding: 19px 20px;
+    font-size: 11px;
+  }
+
+  .hero-stage .hero-explore {
+    display: grid;
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+  }
+
+  .hero-facts-inner {
+    grid-template-columns: 1fr 1.4fr;
+    gap: 24px 18px;
+    padding-block: 28px 32px;
+  }
+
+  .hero-facts .fact-item,
+  .hero-facts p {
+    padding-left: 0;
+  }
+
+  .hero-facts .fact-item + .fact-item::before {
+    display: none;
+  }
+
+  .hero-facts > .hero-facts-inner > a.fact-item {
+    padding-left: 0;
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nature-hero.is-ready .hero-background-image,
+  .nature-hero.is-ready .hero-kicker,
+  .nature-hero.is-ready .hero-title,
+  .nature-hero.is-ready .hero-description,
+  .nature-hero.is-ready .hero-actions {
+    animation: none;
+  }
+
+  .button-primary {
+    transition: background-color 150ms ease, color 150ms ease !important;
+  }
+}

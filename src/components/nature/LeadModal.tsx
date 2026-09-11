@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { IMaskInput } from "react-imask"
 import { ArrowUpRight, X } from "lucide-react"
 import { useLeadModal } from "../../context/LeadModalContext"
+import { createLead } from "../../lib/leadsApi"
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -10,6 +11,7 @@ type FieldErrors = {
   name?: string
   email?: string
   phone?: string
+  form?: string
 }
 
 function digitsOnly(value: string) {
@@ -17,7 +19,7 @@ function digitsOnly(value: string) {
 }
 
 export function LeadModal() {
-  const { isOpen, closeLeadModal } = useLeadModal()
+  const { isOpen, closeLeadModal, setLeadSession } = useLeadModal()
   const titleId = useId()
   const descriptionId = useId()
   const nameRef = useRef<HTMLInputElement>(null)
@@ -27,6 +29,7 @@ export function LeadModal() {
   const [phone, setPhone] = useState("")
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     if (!isOpen) return
@@ -35,6 +38,7 @@ export function LeadModal() {
     setPhone("")
     setErrors({})
     setSubmitted(false)
+    setSubmitting(false)
   }, [isOpen])
 
   const validate = (): FieldErrors => {
@@ -48,19 +52,34 @@ export function LeadModal() {
     return next
   }
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const next = validate()
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
-    const data = {
-      name: name.trim(),
-      email: email.trim(),
-      phone: `+55${digitsOnly(phone)}`,
+    setSubmitting(true)
+    setErrors({})
+
+    try {
+      // Formato livre (não E.164): envia os 11 dígitos nacionais, sem prefixo +55 forçado.
+      const telefone = digitsOnly(phone)
+      const result = await createLead({
+        nome: name.trim(),
+        email: email.trim(),
+        telefone,
+      })
+      setLeadSession({ id: result.id })
+      setSubmitted(true)
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Não foi possível enviar seu contato. Tente novamente."
+      setErrors({ form: message })
+    } finally {
+      setSubmitting(false)
     }
-    console.log(data)
-    setSubmitted(true)
   }
 
   return (
@@ -96,6 +115,7 @@ export function LeadModal() {
               <Dialog.Description id={descriptionId} className="lead-modal-description">
                 Em breve a equipe Gênesis retorna com as informações do Nature.
               </Dialog.Description>
+              {/* PATCH / cadastro estendido (8 passos) bloqueado até política de privacidade — sem CTA "Completar cadastro". */}
               <button type="button" className="section-cta" onClick={closeLeadModal}>
                 <span className="section-cta-label">Fechar</span>
                 <ArrowUpRight className="section-cta-arrow" size={22} strokeWidth={2.25} aria-hidden="true" />
@@ -125,6 +145,7 @@ export function LeadModal() {
                     aria-invalid={Boolean(errors.name)}
                     aria-describedby={errors.name ? "lead-modal-name-error" : undefined}
                     required
+                    disabled={submitting}
                   />
                   {errors.name && (
                     <span id="lead-modal-name-error" className="lead-modal-error">
@@ -146,6 +167,7 @@ export function LeadModal() {
                     aria-invalid={Boolean(errors.email)}
                     aria-describedby={errors.email ? "lead-modal-email-error" : undefined}
                     required
+                    disabled={submitting}
                   />
                   {errors.email && (
                     <span id="lead-modal-email-error" className="lead-modal-error">
@@ -158,7 +180,7 @@ export function LeadModal() {
                   Telefone
                   <div className="lead-modal-phone">
                     <span className="lead-modal-phone-prefix" aria-hidden="true">
-                      <span className="lead-modal-flag">🇧🇷</span>
+                      <span className="lead-modal-flag">BR</span>
                       +55
                     </span>
                     <IMaskInput
@@ -175,6 +197,7 @@ export function LeadModal() {
                       aria-invalid={Boolean(errors.phone)}
                       aria-describedby={errors.phone ? "lead-modal-phone-error" : undefined}
                       required
+                      disabled={submitting}
                     />
                   </div>
                   {errors.phone && (
@@ -184,8 +207,21 @@ export function LeadModal() {
                   )}
                 </label>
 
-                <button type="submit" className="section-cta lead-modal-submit">
-                  <span className="section-cta-label">Enviar contato</span>
+                {errors.form && (
+                  <p className="lead-modal-error" role="alert">
+                    {errors.form}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className="section-cta lead-modal-submit"
+                  disabled={submitting}
+                  aria-busy={submitting}
+                >
+                  <span className="section-cta-label">
+                    {submitting ? "Enviando…" : "Enviar contato"}
+                  </span>
                   <ArrowUpRight className="section-cta-arrow" size={22} strokeWidth={2.25} aria-hidden="true" />
                 </button>
               </form>

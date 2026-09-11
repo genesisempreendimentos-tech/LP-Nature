@@ -1,0 +1,83 @@
+---
+/**
+ * Página completa — ordem confirmada em src/App.tsx:
+ * main(Hero→…→LeadForm) → Footer → FAB → LeadModal
+ * Header sticky no shell (fora do Hero no Astro; no legado fica dentro do Hero).
+ * appReady dispara no load (sem preloader) — seções de marketing consomem igual.
+ */
+import HeaderIsland from "../features/shell/HeaderIsland"
+import Footer from "../features/shell/Footer.astro"
+import LeadModalIsland from "../features/lead/LeadModalIsland"
+import LeadFabIsland from "../features/lead/LeadFabIsland"
+import Hero from "../features/hero/Hero.astro"
+import HeroEntrance from "../features/hero/HeroEntrance"
+import LifeMoment from "../features/marketing/LifeMoment.astro"
+import Pillars from "../features/marketing/Pillars.astro"
+import LocationSection from "../features/marketing/LocationSection.astro"
+import FloorPlansIsland from "../features/marketing/FloorPlansIsland"
+import AmenitiesIsland from "../features/marketing/AmenitiesIsland"
+import Architecture from "../features/marketing/Architecture.astro"
+import Trust from "../features/marketing/Trust.astro"
+import ContactSection from "../features/marketing/ContactSection.astro"
+import MarketingRevealBoot from "../features/marketing/MarketingRevealBoot"
+import "../styles/islands.css"
+import "../styles/shell.css"
+import "../styles/hero.css"
+import "../styles/marketing.css"
+import "../styles/location.css"
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nature Residencial — Página de Vendas</title>
+  </head>
+  <body>
+    {/* Sem overlay: marca appReady imediato — mesmo contrato (dataset + evento). */}
+    <script is:inline>
+      ;(function () {
+        document.documentElement.dataset.appReady = "1"
+        try {
+          window.dispatchEvent(new CustomEvent("nature:app-ready"))
+        } catch (e) {}
+      })()
+    </script>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <HeaderIsland client:only="react" />
+    <HeroEntrance client:load />
+    <MarketingRevealBoot client:load />
+
+    <main id="conteudo">
+      <Hero />
+      <LifeMoment />
+      <Pillars />
+      <LocationSection />
+      <FloorPlansIsland client:visible />
+      <AmenitiesIsland client:visible />
+      <Architecture />
+      <Trust />
+      <ContactSection />
+    </main>
+
+    <Footer />
+    <LeadFabIsland client:only="react" />
+    <LeadModalIsland client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 8px;
+    z-index: 100;
+    background: #fff;
+    color: #1a1c1a;
+    padding: 8px 12px;
+  }
+  .skip-link:focus {
+    left: 8px;
+  }
+</style>

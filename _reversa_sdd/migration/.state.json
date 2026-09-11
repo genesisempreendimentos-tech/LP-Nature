@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "startedAt": "2026-09-10T18:02:38.882Z",
+  "lastCheckpoint": "2026-09-10T19:27:56.179Z",
+  "completedAgents": [
+    "paradigm_advisor",
+    "curator",
+    "strategist",
+    "designer",
+    "screen_translator",
+    "inspector"
+  ],
+  "pendingAgents": [],
+  "currentAgent": {
+    "agent": null,
+    "phase": null,
+    "status": "complete",
+    "topologyApproved": true,
+    "screenModeApproved": true
+  },
+  "pendingDecisions": [],
+  "artifacts": {
+    "migration_brief": {
+      "path": "_reversa_sdd/migration/migration_brief.md",
+      "hash": "sha256:5918974141f8e751a959155ac882ae0c662dd245bab47023b5b40f466ef6b108",
+      "at": "2026-09-10T18:02:38.882Z"
+    },
+    "paradigm_decision": {
+      "path": "_reversa_sdd/migration/paradigm_decision.md",
+      "hash": "sha256:be35ec8241ee836b3024da07d6edbd47de849a6f2d28a9ea47d959a2f1d1f79c",
+      "at": "2026-09-10T18:05:36.880Z"
+    },
+    "target_business_rules": {
+      "path": "_reversa_sdd/migration/target_business_rules.md",
+      "hash": "sha256:196903b85e897cd71292056150c1288fb219c9ce9cab076c31b16a7d940146a4",
+      "at": "2026-09-10T18:07:39.696Z"
+    },
+    "discard_log": {
+      "path": "_reversa_sdd/migration/discard_log.md",
+      "hash": "sha256:d3b6013493731ef51a7aa1f9cd8fe651d73b75f3f014fdf414f12d7b52361db1",
+      "at": "2026-09-10T18:07:39.696Z"
+    },
+    "migration_strategy": {
+      "path": "_reversa_sdd/migration/migration_strategy.md",
+      "hash": "sha256:ea40f739a0368aef61aa07775f67853095ca1d8e79591e97c87f15f3c554896c",
+      "at": "2026-09-10T18:10:50.870Z"
+    },
+    "risk_register": {
+      "path": "_reversa_sdd/migration/risk_register.md",
+      "hash": "sha256:b9c149d53a72dd02429239dd589b61f036c1786b91decefc1459f7c0e6637a67",
+      "at": "2026-09-10T18:10:50.870Z"
+    },
+    "cutover_plan": {
+      "path": "_reversa_sdd/migration/cutover_plan.md",
+      "hash": "sha256:eb4717ae9f672a91c57592efe3d681ccfd7de17641803a554cee15b06fb0f7eb",
+      "at": "2026-09-10T18:13:33.604Z"
+    },
+    "topology_decision": {
+      "path": "_reversa_sdd/migration/topology_decision.md",
+      "hash": "sha256:66d2062c2e98b0e0ebeb2ad4b3808eb40fde76cbad150ce02bedcb6f2596067c",
+      "at": "2026-09-10T18:17:20.512Z",
+      "amendment": "packages/shared mandatory with PATCH allowlist"
+    },
+    "target_architecture": {
+      "path": "_reversa_sdd/migration/target_architecture.md",
+      "hash": "sha256:2f970b61001e6c551dd9c79c5b08e27e2584da1eadd4fc0b76499a8658b66fda",
+      "at": "2026-09-10T18:18:46.015Z"
+    },
+    "target_domain_model": {
+      "path": "_reversa_sdd/migration/target_domain_model.md",
+      "hash": "sha256:815de96786cf3dded609abfcccfc60e9cf10635c955b2cf136b60106de41400a",
+      "at": "2026-09-10T18:18:46.015Z"
+    },
+    "target_data_model": {
+      "path": "_reversa_sdd/migration/target_data_model.md",
+      "hash": "sha256:f6be21e050f656a041ebe2292e7ca9c2c1d7f9366057bca0faf358c2ae151db3",
+      "at": "2026-09-10T18:27:03.481Z",
+      "authoritativeSchema": false
+    },
+    "data_migration_plan": {
+      "path": "_reversa_sdd/migration/data_migration_plan.md",
+      "hash": "sha256:9ed707731020dca56f27e8600f2dbb45af51265c2e9e9df1b118f109eb4f5119",
+      "at": "2026-09-10T18:24:33.210Z"
+    },
+    "screen_modernization_decision": {
+      "path": "_reversa_sdd/migration/screen_modernization_decision.md",
+      "hash": "sha256:5d5f11f61243fd1c316edb2426b37fbb6d2abea38b1116b4f64da7aaee70f24b",
+      "at": "2026-09-10T19:21:58.748Z",
+      "mode": "hybrid"
+    },
+    "screens_inventory": {
+      "path": "_reversa_sdd/screens/inventory.json",
+      "at": "2026-09-10T18:32:01.864Z",
+      "screenCount": 15
+    },
+    "design_system": {
+      "path": "_reversa_sdd/design-system/",
+      "at": "2026-09-10T18:39:12.657Z",
+      "files": [
+        "color-palette.md",
+        "typography.md",
+        "spacing.md",
+        "tokens.md",
+        "design-system.md"
+      ]
+    },
+    "target_screens": {
+      "path": "_reversa_sdd/migration/target_screens.md",
+      "hash": "sha256:4b1dc9c2e6ab836b1166886e3fd96c0ada3bf388f46844b48bb03626fa7506a1",
+      "at": "2026-09-10T19:21:58.748Z",
+      "screenCount": 15
+    },
+    "screen_deviation_log": {
+      "path": "_reversa_sdd/migration/screen_deviation_log.md",
+      "hash": "sha256:31958805ec81cb7cd71ac57cfe6a800849db41dd9a9890c4d2955b179bcee59c",
+      "at": "2026-09-10T19:27:56.179Z",
+      "pending": 0,
+      "approved": 9
+    },
+    "golden_manifest": {
+      "path": "_reversa_sdd/screens/golden/manifest.yaml",
+      "at": "2026-09-10T19:21:58.748Z",
+      "present": 0
+    },
+    "parity_specs": {
+      "path": "_reversa_sdd/migration/parity_specs.md",
+      "hash": "sha256:e7fdafb18e715d5673da7d8f7324000fccfb127373035da463ca409da7e37a23",
+      "at": "2026-09-10T19:27:56.179Z"
+    },
+    "parity_tests": {
+      "path": "_reversa_sdd/migration/parity_tests/",
+      "count": 8,
+      "active": 7,
+      "deprecated": ["04-interesse-planta.feature"],
+      "at": "2026-09-11T11:36:00.000Z",
+      "note": "PT-004 deprecated; PT-001 response { id } only"
+    },
+    "handoff": {
+      "path": "_reversa_sdd/migration/handoff.md",
+      "hash": "sha256:a1ccbc4e67b6625a1a03487949c8f8e3f787be8a1c4974a9b42a39a5145760c1",
+      "at": "2026-09-10T19:27:56.179Z"
+    }
+  },
+  "auto": false,
+  "engine": "cursor",
+  "reversaVersion": "1.3.3",
+  "briefPath": "_reversa_sdd/migration/migration_brief.md",
+  "expectedLegacyArtifacts": "references/expected_legacy_artifacts.yaml",
+  "curatorResolutions": {
+    "BR-HUMANA-001": "b_conditional_on_2a",
+    "BR-HUMANA-002": "a_post_only_v1",
+    "BR-HUMANA-003": "c_bff_same_deploy",
+    "BR-HUMANA-004": "b_keep_site_metragem",
+    "BR-HUMANA-005": "a_confirm_seo_with_team",
+    "BR-HUMANA-006": "a_unify_amenities_now",
+    "note_1_2": "1b only while 2a; if PATCH in v1 revisit 1→a",
+    "note_5": "SEO hypothesis must not be silently accepted"
+  },
+  "chosenStrategy": "B",
+  "architectureApprovedAt": "2026-09-10T18:32:01.864Z",
+  "pipelineComplete": true,
+  "pipelineCompletedAt": "2026-09-10T19:27:56.179Z"
+}

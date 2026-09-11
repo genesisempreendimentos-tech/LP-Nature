@@ -1,0 +1,26 @@
+---
+import { siteData } from "../../data/siteData"
+const { items } = siteData.pillars
+---
+
+<section id="diferenciais" class="pillars-section shell" data-marketing-reveal data-section="pilares">
+  <div class="pillar-grid">
+    {
+      items.map((item) => (
+        <article class="pillar-item">
+          <div class="pillar-photo">
+            <img
+              src={item.image}
+              alt={`Referência de ${item.title.toLowerCase()}`}
+              loading="lazy"
+            />
+            <span>{item.number}</span>
+          </div>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>
+      ))
+    }
+  </div>
+  <p class="image-note">Imagens de referência de estilo de vida e ambientes.</p>
+</section>

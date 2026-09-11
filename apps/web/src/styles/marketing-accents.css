@@ -1,0 +1,57 @@
+﻿/* Marketing accents — papéis design-system */
+:root {
+  --color-content-accent: #788262;
+  --color-interactive-accent: #5c6450;
+  --color-accent: var(--color-interactive-accent);
+  --font-nav: "Montserrat", system-ui, -apple-system, sans-serif;
+}
+h1 em, h2 em { font-weight: 400; color: var(--color-content-accent); }
+.eyebrow { color: var(--color-content-accent); }
+.section-cta {
+  background: var(--color-interactive-accent) !important;
+  border-color: var(--color-interactive-accent) !important;
+  color: #faf9f3 !important;
+  font-family: var(--font-nav);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.architecture-principles span,
+.architecture-principles strong,
+.trust-certifications-title span,
+.trust-proofline span {
+  color: var(--color-content-accent);
+}
+.amenities-categories {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.amenities-categories li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-size: 13px;
+}
+.amenities-categories strong {
+  font-family: var(--font-nav);
+  letter-spacing: 0.1em;
+  color: var(--color-content-accent);
+}
+[data-marketing-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+[data-marketing-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-marketing-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,5 @@
+-- Nature — Página de Vendas
+-- NOTA DE ESCOPO (não aplicar DROP sem o admin):
+-- lead_token saiu do escopo da Prioridade #0 (API não grava mais essa coluna).
+-- Se a coluna existir no Neon (migration 002), pode permanecer ociosa;
+-- remoção física fica a cargo do admin da tabela compartilhada site_nature.
