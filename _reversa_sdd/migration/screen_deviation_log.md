@@ -13,11 +13,12 @@ hash: "sha256:31958805ec81cb7cd71ac57cfe6a800849db41dd9a9890c4d2955b179bcee59c"
 
 ## Resumo
 
-- **Total**: 9
+- **Total**: 11
 - **Pendentes**: 0
-- **Aprovadas**: 9
+- **Aprovadas**: 11
 - **Rejeitadas**: 0
 - **Nota 2026-09-11**: DEV-008 descrição expandida (Header fora do Hero = sticky shell).
+- **Nota 2026-09-11 (limpeza monorepo)**: DEV-010 (sem preloader) e DEV-011 (reveals CSS+IO) formalizados; legado React removido.
 
 ## Entradas
 
@@ -158,16 +159,50 @@ hash: "sha256:31958805ec81cb7cd71ac57cfe6a800849db41dd9a9890c4d2955b179bcee59c"
 | Propaga para parity_specs § Exceções | sim |
 | Decisão produto | **Opção A (v1):** exclusão consciente BR-only (+55 fixo) no formulário estruturado. Público-alvo da campanha = Teresópolis + RJ; sem avatar internacional. **REVISÁVEL** se campanha futura mirar comprador internacional. Canal wa.me no rodapé permanece sem restrição de país. |
 
+### DEV-010
+
+| Campo | Valor |
+|---|---|
+| Tela afetada | landing-page / shell (preloader) |
+| Tipo | `modernizacao` |
+| Descrição | Astro **sem** overlay de preloader. No load, `document.documentElement.dataset.appReady = "1"` e evento `nature:app-ready` disparam de imediato (`index.astro` inline). Não há `inert`, `introVisible` nem componente `Preloader`. |
+| Motivo | Decisão humana na migração: reduzir atrito de entrada e hidratação; o gate visual do legado não é requisito do funil. |
+| Origem no legado | `src/components/nature/Preloader.tsx` + `App.tsx` (`ready` / `introVisible` / `inert`) |
+| Implicação para parity tests | PT-005 deixa de exigir overlay; exige `appReady` imediato e página interativa no first paint útil |
+| Aprovação | `aprovado` |
+| Aprovado por | Bruno |
+| Aprovado em | 2026-09-11T13:22:00.000Z |
+| Propaga para parity_specs § Exceções | sim |
+
+### DEV-011
+
+| Campo | Valor |
+|---|---|
+| Tela afetada | seções marketing (exceto Hero) |
+| Tipo | `modernizacao` |
+| Descrição | Reveals de seção no Astro usam **CSS + IntersectionObserver** (`marketingReveal.ts` / `[data-marketing-reveal]`), **não** GSAP SplitText / `usePageMotion`. O **Hero** mantém GSAP + SplitText completo (`HeroEntrance.tsx`) — único lugar onde o impacto visual justifica a hidratação. |
+| Motivo | Decisão FINAL (não débito técnico): hidratar o mínimo; Hero carrega o peso de motion; resto da página fica leve e consistente com islands. |
+| Origem no legado | `src/motion/usePageMotion.ts`, `RevealText.tsx` |
+| Implicação para parity tests | Não exigir SplitText/timelines GSAP fora do Hero; paridade = reveal on-scroll + reduced-motion respeitado |
+| Aprovação | `aprovado` |
+| Aprovado por | Bruno |
+| Aprovado em | 2026-09-11T13:22:00.000Z |
+| Propaga para parity_specs § Exceções | sim |
+
 ## Telas com mais de uma deviation
 
 | Tela | IDs |
 |---|---|
 | lead-modal | DEV-005, DEV-009 |
 | amenities / location-map | DEV-007 |
-| hero / landing-page | DEV-008 |
+| hero / landing-page | DEV-008, DEV-010, DEV-011 |
 | (todas) | DEV-001, DEV-002 |
 
 ## Notas
 
 DEV-009 **aprovado** (opção A, revisável): BR-only no modal v1; wa.me rodapé sem restrição de país.
+
+DEV-010 **aprovado**: sem preloader no Astro; `appReady` imediato.
+
+DEV-011 **aprovado**: reveals de seção = CSS+IO (final); Hero = GSAP completo.
 

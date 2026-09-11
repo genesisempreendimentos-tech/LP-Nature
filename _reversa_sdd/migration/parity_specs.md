@@ -36,17 +36,18 @@ Transição: SPA React monolítica + Context → **Astro content-first + islands
 
 Dimensões além de “mesma entrada → mesma saída”:
 1. **Estado cross-island**: abrir modal a partir de Header/Hero/SectionCta/FAB/planos deve usar a **mesma store** (nanostores), não Context React.
-2. **Gate de intro**: `ready` / `introVisible` / `inert` equivalentes ao legado (hash / reduced-motion pulam preloader).
+2. **App ready**: sem gate de preloader (DEV-010). `dataset.appReady` + `nature:app-ready` no load; seções consomem o contrato sem overlay/`inert`.
 3. **Borda API**: UI não persiste lead localmente; POST retorna `{ id }` (sem `token` / `lead_token` no contrato estável v1); `pagina_origem` é stampada no servidor; v1 sem PATCH sensível.
-4. **Parallel run**: dois fronts, mesma tabela Neon; `pagina_origem` diferencia canais.
+4. **Parallel run**: dois fronts, mesma tabela Neon; `pagina_origem` diferencia canais. *(Após limpeza 2026-09-11 o front oficial é só Astro; parallel run legado encerrou.)*
 5. **Copy**: strings de CTA/labels do subset literal = código legado (diff textual = 0, salvo DEV aprovado).
+6. **Motion**: Hero = GSAP/SplitText; reveals de seção = CSS + IntersectionObserver (DEV-011, decisão final).
 
 ## Paridade de telas (híbrido)
 
 | Subset | Modo | Validação |
 |---|---|---|
 | hero, life-moment, pillars, location, floor-plans, amenities, architecture, trust | literal-ish | Contrato: hierarquia/classes principais, copy, CTAs → `leadModal.open`; oráculo = código React |
-| preloader, landing-page/shell, location-map, lead-cta, footer, whatsapp-fab, lead-modal | modernizado | Contrato: eventos, 4 estados onde aplicável, tokens content vs interactive |
+| preloader *(removido)*, landing-page/shell, location-map, lead-cta, footer, whatsapp-fab, lead-modal | modernizado | Contrato: eventos, 4 estados onde aplicável, tokens content vs interactive; appReady imediato (DEV-010) |
 
 Sem `@paridade-visual` pixel: golden `present: false` (DEV-001).
 
@@ -63,6 +64,8 @@ Sem `@paridade-visual` pixel: golden `present: false` (DEV-001).
 | DEV-007 | Unificar amenities/POIs em siteData |
 | DEV-008 | Header global/sticky no shell (fora do Hero) — ver descrição expandida no screen_deviation_log |
 | DEV-009 | Modal BR-only (+55) v1; **revisável**; wa.me rodapé sem restrição de país |
+| DEV-010 | Sem overlay de preloader; `appReady` imediato no load |
+| DEV-011 | Reveals de seção = CSS+IO (final); Hero mantém GSAP/SplitText |
 
 ## Features ativas vs deprecated
 
@@ -72,7 +75,7 @@ Sem `@paridade-visual` pixel: golden `present: false` (DEV-001).
 | PT-002 | `02-funil-modal-nao-whatsapp.feature` | ativo |
 | PT-003 | `03-footer-whatsapp.feature` | ativo |
 | PT-004 | `04-interesse-planta.feature` | **DEPRECATED** — nature:plan / interesse_planta removidos (Curator + reversão; ver ambiguity_log) |
-| PT-005 | `05-preloader-gate.feature` | ativo |
+| PT-005 | `05-preloader-gate.feature` | ativo — **reescrito**: appReady imediato (DEV-010), sem overlay |
 | PT-006 | `06-parallel-run-pagina-origem.feature` | ativo (cenário legado = skip até instrumentação) |
 | PT-007 | `07-mapa-island.feature` | ativo |
 | PT-008 | `08-copy-literal-hero.feature` | ativo |

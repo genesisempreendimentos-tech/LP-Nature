@@ -1,25 +1,28 @@
 # language: pt
 # spec-id: PT-005
 # rastreabilidade:
-#   process_flows: casca-aplicacao / preloader
-#   target_architecture: features/shell
+#   process_flows: casca-aplicacao / app-ready
+#   target_architecture: features/shell (appReady)
 #   paradigma_alvo: hibrido
-#   deviations: DEV-004
+#   deviations: DEV-010
+# status: ativo (reescrito 2026-09-11 — sem overlay de preloader)
 
-Funcionalidade: Gate de introdução
+Funcionalidade: App ready imediato
   Como visitante
-  Quero ver a intro uma vez (ou pulá-la)
-  Para então interagir com a página
+  Quero interagir com a página assim que ela carrega
+  Para não ficar bloqueado por uma intro
 
   @paridade
-  Cenário: Preloader completa e libera a página
-    Dado que prefiro motion normal e não há hash na URL
-    Quando o preloader termina
-    Então a página deixa de estar inert
-    E o FAB pode aparecer após sair do hero
+  Cenário: Página marca appReady no load
+    Dado que a landing Astro carrega
+    Quando o script inline de boot roda
+    Então documentElement.dataset.appReady é "1"
+    E o evento nature:app-ready é disparado
+    E não existe overlay de preloader montado
 
   @paridade
-  Cenário: Reduced motion ou hash pula preloader
-    Dado prefers-reduced-motion ou URL com hash
-    Quando a página carrega
-    Então o preloader não bloqueia a interação
+  Cenário: Seções de marketing consomem appReady sem gate visual
+    Dado que appReady já está setado
+    Quando uma seção com data-marketing-reveal entra no viewport
+    Então o reveal CSS/IntersectionObserver pode ocorrer
+    E a página nunca esteve inert por causa de intro

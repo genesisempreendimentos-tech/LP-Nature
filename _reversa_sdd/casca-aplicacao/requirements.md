@@ -6,42 +6,38 @@
 
 ## Visão Geral
 
-Bootstrap e composição da landing Nature Residencial: monta o provider de lead, controla o gate de intro (`ready` / `introVisible`), ordena as seções de conversão e disponibiliza navegação sticky e rodapé institucional. Resolve o problema de entregar uma SPA de uma página coerente, acessível e com intro controlada antes da interação plena.
+Bootstrap e composição da landing Nature Residencial (Astro + islands): shell sticky, seções de conversão, funil de lead (nanostores) e rodapé institucional. **Sem** gate visual de preloader (DEV-010): `appReady` no load.
 
 ## Responsabilidades
 
-- Montar a árvore React (`main.tsx` → `App`) e envolver a página com `LeadModalProvider`.
-- Decidir se o preloader roda ou se a página inicia já interativa.
-- Compor a ordem linear das seções de marketing e conversão.
-- Expor skip-link, header (via Hero), footer e liberar FAB após o fim da intro.
-- Acionar motion de página via `usePageMotion` quando `ready`.
+- Compor a ordem linear das seções de marketing e conversão (`apps/web/src/pages/index.astro`).
+- Expor skip-link, header sticky, footer e FAB.
+- Marcar `appReady` imediato; reveals de seção via CSS + IntersectionObserver (DEV-011); Hero com GSAP.
 
 ## Regras de Negócio
 
-- Preloader é pulado se `prefers-reduced-motion: reduce` **ou** se há `location.hash` na URL. 🟢
-- Enquanto `introVisible`, a página recebe `inert` (não interativa). 🟢
-- `onReveal` do Preloader define `ready=true` (libera animações do Hero/Header) sem remover o overlay ainda. 🟢
-- `onComplete` define `ready=true` e `introVisible=false` (remove Preloader e libera WhatsAppFab). 🟢
-- FAB só monta quando `!introVisible`. 🟢
+- Não há overlay de preloader nem `inert` de intro (DEV-010). 🟢
+- `dataset.appReady` + `nature:app-ready` no load. 🟢
+- FAB monta com a página (sem esperar intro). 🟢
 - CTA do header abre o modal de lead (não navega para `#contato`). 🟢
 - Header usa histerese de scroll 80/40 px para estado sólido. 🟢
 - WhatsApp do rodapé permanece link `wa.me` (exceção vs CTAs da página). 🟢
-- `privacyHref` do footer ainda aponta para `#` — política real ausente. 🔴
+- `privacyHref` do footer → https://genesisempreendimentos.com.br/politicas. 🟢
 
 ## Requisitos Funcionais
 
 | ID | Requisito | Prioridade | Critério de Aceite |
 |----|-----------|------------|-------------------|
-| RF-01 | A aplicação monta a SPA em `#root` e renderiza a composição completa da landing | Must | Com `pnpm dev`/`build`, a página exibe Hero → seções → Footer |
-| RF-02 | Gate de intro: iniciar com preloader salvo se reduced-motion ou hash | Must | Com hash `#plantas` ou reduced-motion, não há overlay de intro |
-| RF-03 | Página fica `inert` durante intro e volta interativa ao completar | Must | Links/CTAs não respondem durante intro; respondem após `onComplete` |
+| RF-01 | A aplicação monta a landing Astro com composição completa | Must | Com `pnpm run dev:web`, a página exibe Hero → seções → Footer |
+| RF-02 | Sem gate de preloader; appReady imediato (DEV-010) | Must | Sem overlay; `dataset.appReady=1` no load |
+| RF-03 | *(removido)* Página `inert` durante intro | — | N/A — DEV-010 |
 | RF-04 | Skip-link “Pular para o conteúdo” aponta para `#conteudo` | Must | Tab inicial alcança o skip-link e o foco vai ao main |
-| RF-05 | Ordem das seções: Hero, LifeMoment, Pillars, Location, FloorPlans, Amenities, Architecture, Trust, LeadForm | Must | DOM/`main` segue essa ordem |
-| RF-06 | Provider de lead envolve toda a página; LeadModal sempre montado | Must | Qualquer CTA pode abrir o modal |
-| RF-07 | Motion de página só após `ready` | Must | Sem `ready`, reveals globais não disparam |
+| RF-05 | Ordem das seções: Hero, LifeMoment, Pillars, Location, FloorPlans, Amenities, Architecture, Trust, Contact | Must | DOM/`main` segue essa ordem |
+| RF-06 | Funil de lead (nanostores) + LeadModal sempre montado | Must | Qualquer CTA pode abrir o modal |
+| RF-07 | Reveals de seção após appReady via CSS+IO; Hero GSAP (DEV-011) | Must | Sem exigir SplitText fora do Hero |
 | RF-08 | Header sticky com menu e CTA de lead | Must | Scroll muda sólido; CTA abre modal |
-| RF-09 | Footer exibe contatos e link WhatsApp institucional | Should | Dados de `siteData.footer`/`contact` visíveis |
-| RF-10 | Link de privacidade funcional | Won't (hoje) / Must (produto) | Hoje `#` 🔴; aceite futuro = URL real |
+| RF-09 | Footer exibe contatos e link WhatsApp institucional | Should | Dados de shell/siteData visíveis |
+| RF-10 | Link de privacidade funcional | Must | URL real da Gênesis |
 
 ## Requisitos Não Funcionais
 
