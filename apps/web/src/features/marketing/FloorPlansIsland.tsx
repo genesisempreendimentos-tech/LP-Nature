@@ -56,7 +56,6 @@ export default function FloorPlansIsland() {
               Consulte as plantas técnicas e a disponibilidade de cada
               configuração com a equipe comercial.
             </p>
-            <SectionCta>Quero conhecer esta opção</SectionCta>
           </div>
           <figure id="plan-preview" className="plan-preview">
             <img
@@ -66,6 +65,7 @@ export default function FloorPlansIsland() {
               loading="lazy"
             />
           </figure>
+          <SectionCta>Quero conhecer esta opção</SectionCta>
         </div>
       </div>
     </section>

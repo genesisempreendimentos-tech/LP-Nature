@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test:e2e:hydrate": "node ./scripts/e2e-hydrate-smoke.mjs",
+    "test:e2e:lead-disconnect": "node ./scripts/e2e-lead-disconnect.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.0",

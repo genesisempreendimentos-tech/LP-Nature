@@ -11,6 +11,8 @@ export default defineConfig({
   integrations: [react()],
   server: {
     port: 4321,
+    // Windows: sem host, Astro fica só em ::1 e Playwright/curl em 127.0.0.1 falham.
+    host: true,
   },
   vite: {
     server: {

@@ -3,7 +3,10 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { useStore } from "@nanostores/react"
 import { IMaskInput } from "react-imask"
 import { ArrowUpRight, X } from "lucide-react"
-import { createLead } from "./leadsClient"
+import { createLead, LeadApiError } from "./leadsClient"
+import LeadFork from "./LeadFork"
+import { LeadThanks } from "./LeadWizard"
+import { trackMeta } from "../../lib/metaPixel"
 import {
   $leadModalOpen,
   closeLeadModal,
@@ -18,7 +21,11 @@ type FieldErrors = {
   email?: string
   phone?: string
   form?: string
+  notice?: string
 }
+
+type Phase = "form" | "fork" | "thanks"
+// "wizard" desconectado (LGPD) — LeadWizard.tsx permanece no repo sem entrada.
 
 function digitsOnly(value: string) {
   return value.replace(/\D/g, "")
@@ -34,8 +41,9 @@ export default function LeadModalIsland() {
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
   const [errors, setErrors] = useState<FieldErrors>({})
-  const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [phase, setPhase] = useState<Phase>("form")
+  const [leadId, setLeadId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isOpen) return
@@ -43,8 +51,9 @@ export default function LeadModalIsland() {
     setEmail("")
     setPhone("")
     setErrors({})
-    setSubmitted(false)
     setSubmitting(false)
+    setPhase("form")
+    setLeadId(null)
   }, [isOpen])
 
   const validate = (): FieldErrors => {
@@ -75,8 +84,14 @@ export default function LeadModalIsland() {
         telefone: digitsOnly(phone),
       })
       setLeadSession({ id: result.id })
-      setSubmitted(true)
+      setLeadId(result.id)
+      trackMeta("Lead")
+      setPhase("fork")
     } catch (err) {
+      if (err instanceof LeadApiError && err.duplicate) {
+        setErrors({ notice: err.message })
+        return
+      }
       const message =
         err instanceof Error
           ? err.message
@@ -102,7 +117,7 @@ export default function LeadModalIsland() {
           aria-describedby={descriptionId}
           onOpenAutoFocus={(event) => {
             event.preventDefault()
-            nameRef.current?.focus()
+            if (phase === "form") nameRef.current?.focus()
           }}
           onCloseAutoFocus={(event) => {
             event.preventDefault()
@@ -111,43 +126,21 @@ export default function LeadModalIsland() {
               trigger.focus()
               return
             }
-            // Fallback: não deixar o foco em body sem destino.
-            ;(document.querySelector(".harness-cta") as HTMLElement | null)?.focus()
+            ;(
+              document.querySelector(".harness-cta") as HTMLElement | null
+            )?.focus()
           }}
         >
-          <div className="lead-modal-top">
-            <p className="eyebrow">NATURE RESIDENCIAL</p>
-            <Dialog.Close className="lead-modal-close" aria-label="Fechar">
-              <X size={20} strokeWidth={1.6} />
-            </Dialog.Close>
-          </div>
-
-          {submitted ? (
-            <div className="lead-modal-success" role="status">
-              <Dialog.Title id={titleId} className="lead-modal-title">
-                Recebemos seu contato
-              </Dialog.Title>
-              <Dialog.Description
-                id={descriptionId}
-                className="lead-modal-description"
-              >
-                Em breve a equipe Gênesis retorna com as informações do Nature.
-              </Dialog.Description>
-              <button
-                type="button"
-                className="section-cta"
-                onClick={closeLeadModal}
-              >
-                <span className="section-cta-label">Fechar</span>
-                <ArrowUpRight
-                  className="section-cta-arrow"
-                  size={22}
-                  strokeWidth={2.25}
-                  aria-hidden="true"
-                />
-              </button>
+          {phase !== "thanks" && (
+            <div className="lead-modal-top">
+              <p className="eyebrow">NATURE RESIDENCIAL</p>
+              <Dialog.Close className="lead-modal-close" aria-label="Fechar">
+                <X size={20} strokeWidth={1.6} />
+              </Dialog.Close>
             </div>
-          ) : (
+          )}
+
+          {phase === "form" && (
             <>
               <Dialog.Title id={titleId} className="lead-modal-title">
                 Comece seu novo endereço
@@ -231,6 +224,12 @@ export default function LeadModalIsland() {
                   )}
                 </label>
 
+                {errors.notice && (
+                  <p className="lead-modal-notice" role="status">
+                    {errors.notice}
+                  </p>
+                )}
+
                 {errors.form && (
                   <p className="lead-modal-error" role="alert">
                     {errors.form}
@@ -254,6 +253,44 @@ export default function LeadModalIsland() {
                   />
                 </button>
               </form>
+            </>
+          )}
+
+          {phase === "fork" && leadId && (
+            <>
+              <Dialog.Title id={titleId} className="sr-only">
+                Recebemos seu contato
+              </Dialog.Title>
+              <Dialog.Description id={descriptionId} className="sr-only">
+                Cadastro recebido. Feche ou fale pelo WhatsApp.
+              </Dialog.Description>
+              <LeadFork
+                leadId={leadId}
+                titleId={`${titleId}-fork`}
+                descriptionId={`${descriptionId}-fork`}
+                onWhatsAppDone={closeLeadModal}
+              />
+            </>
+          )}
+
+          {/*
+            Cadastro completo (LeadWizard) desconectado — sem setPhase("wizard").
+            Para religar: reimportar LeadWizard, restaurar phase "wizard" e o CTA
+            em LeadFork (PENDENCIAS.md item 1 — LGPD).
+          */}
+
+          {phase === "thanks" && (
+            <>
+              <Dialog.Title id={titleId} className="sr-only">
+                Obrigado!
+              </Dialog.Title>
+              <Dialog.Description id={descriptionId} className="sr-only">
+                Cadastro concluído.
+              </Dialog.Description>
+              <LeadThanks
+                titleId={`${titleId}-thanks`}
+                descriptionId={`${descriptionId}-thanks`}
+              />
             </>
           )}
         </Dialog.Content>

@@ -7,10 +7,24 @@ Extraído de `_reversa_sdd/` antes da remoção dos artefatos do Reversa (2026-0
 
 ## 1. Política de privacidade + consentimento LGPD
 
-Bloqueia o lançamento do **cadastro estendido** (fluxo de 8 passos / `PATCH`).  
-O link do rodapé já aponta para a política da Gênesis; falta o **checkbox de consentimento** e o ok jurídico para a fase 2.
+Bloqueia o lançamento do **cadastro estendido** (fluxo de 8 passos / `PATCH`).
 
-**Depende de:** jurídico / negócio.
+O link do rodapé (`https://genesisempreendimentos.com.br/politicas`) é o
+MESMO usado no rodapé institucional oficial da Gênesis (confirmado no
+bundle do site deles) — não é um link nosso errado. Porém, testado ao
+vivo (curl + navegador real): a rota retorna 200 mas renderiza a HOME
+do site, não o conteúdo da política. `/politica-de-privacidade/`
+(alternativa também real do domínio) falha do mesmo jeito. Como
+controle: `/politica-cookies` funciona normalmente — ou seja, o site
+da Gênesis não está todo quebrado, só a rota de privacidade.
+
+Falta, além do checkbox de consentimento e do ok jurídico:
+**avisar a Gênesis que a própria política de privacidade dela está
+soft-broken no site institucional** — isso não é algo que o Nature
+resolve, é um problema no domínio deles.
+
+**Depende de:** jurídico / negócio (checkbox + ok) **e** Gênesis / TI
+deles (corrigir a rota quebrada no próprio site institucional).
 
 ---
 

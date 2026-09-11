@@ -3,12 +3,14 @@
  * Página completa — ordem confirmada em src/App.tsx:
  * main(Hero→…→LeadForm) → Footer → FAB → LeadModal
  * Header sticky no shell (fora do Hero no Astro; no legado fica dentro do Hero).
- * appReady dispara no load (sem preloader) — seções de marketing consomem igual.
+ * appReady dispara ao fim do preloader (ou skip / reduced-motion).
  */
 import HeaderIsland from "../features/shell/HeaderIsland"
 import Footer from "../features/shell/Footer.astro"
 import LeadModalIsland from "../features/lead/LeadModalIsland"
 import LeadFabIsland from "../features/lead/LeadFabIsland"
+import CookieConsentBanner from "../features/tracking/CookieConsentBanner"
+import PreloaderIsland from "../features/shell/PreloaderIsland"
 import Hero from "../features/hero/Hero.astro"
 import HeroEntrance from "../features/hero/HeroEntrance"
 import LifeMoment from "../features/marketing/LifeMoment.astro"
@@ -33,17 +35,52 @@ import "../styles/location.css"
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nature Residencial — Página de Vendas</title>
+    <!-- Meta Pixel Base — ID compartilhado com o site institucional -->
+    <script is:inline>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments)
+        }
+        if (!f._fbq) f._fbq = n
+        n.push = n
+        n.loaded = !0
+        n.version = "2.0"
+        n.queue = []
+        t = b.createElement(e)
+        t.async = !0
+        t.src = v
+        s = b.getElementsByTagName(e)[0]
+        s.parentNode.insertBefore(t, s)
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js",
+      )
+      fbq("init", "2204287590401451")
+      fbq("track", "PageView")
+    </script>
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display:none"
+        src="https://www.facebook.com/tr?id=2204287590401451&ev=PageView&noscript=1"
+        alt=""
+      />
+    </noscript>
   </head>
   <body>
-    {/* Sem overlay: marca appReady imediato — mesmo contrato (dataset + evento). */}
-    <script is:inline>
-      ;(function () {
-        document.documentElement.dataset.appReady = "1"
-        try {
-          window.dispatchEvent(new CustomEvent("nature:app-ready"))
-        } catch (e) {}
-      })()
-    </script>
+    {/* Shell estático até o island hidratar — evita flash sem overlay. */}
+    <div
+      id="nature-preloader-boot"
+      class="nature-preloader nature-preloader--boot"
+      aria-hidden="true"
+    ></div>
+    <PreloaderIsland client:load />
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <HeaderIsland client:only="react" />
     <HeroEntrance client:load />
@@ -64,6 +101,42 @@ import "../styles/location.css"
     <Footer />
     <LeadFabIsland client:only="react" />
     <LeadModalIsland client:only="react" />
+    <CookieConsentBanner client:only="react" />
+
+    <!-- ViewContent: uma vez por page load quando o footer entra na viewport -->
+    <script is:inline>
+      ;(function () {
+        var fired = false
+        function trackViewContent() {
+          if (fired) return
+          if (typeof fbq !== "function") return
+          fired = true
+          fbq("track", "ViewContent")
+        }
+        function bind() {
+          var el = document.getElementById("site-footer")
+          if (!el || typeof IntersectionObserver !== "function") return
+          var io = new IntersectionObserver(
+            function (entries) {
+              for (var i = 0; i < entries.length; i++) {
+                if (entries[i].isIntersecting) {
+                  trackViewContent()
+                  io.disconnect()
+                  break
+                }
+              }
+            },
+            { threshold: 0.15 },
+          )
+          io.observe(el)
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", bind)
+        } else {
+          bind()
+        }
+      })()
+    </script>
   </body>
 </html>
 

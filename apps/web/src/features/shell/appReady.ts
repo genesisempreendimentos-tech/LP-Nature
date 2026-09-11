@@ -1,8 +1,8 @@
 import { atom } from "nanostores"
 
 /**
- * Gate global de “página pronta” para reveals de marketing.
- * Disparado no load (inline em index.astro) via dataset + `nature:app-ready`.
+ * Gate global de “página pronta” para reveals de marketing / hero.
+ * Disparado ao fim do preloader (dataset + `nature:app-ready`).
  */
 export const $appReady = atom(false)
 

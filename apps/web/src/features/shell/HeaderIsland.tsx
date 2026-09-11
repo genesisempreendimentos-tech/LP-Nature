@@ -90,7 +90,7 @@ export default function HeaderIsland() {
       }
     }
 
-    const desktop = window.matchMedia("(min-width: 761px)")
+    const desktop = window.matchMedia("(min-width: 1051px)")
     const onResize = () => {
       if (desktop.matches) setMenuOpen(false)
     }
