@@ -1,12 +1,13 @@
 import { useState } from "react"
+import { ClipboardList } from "lucide-react"
 import { patchLead } from "./leadsClient"
 import { shellFooter } from "../../data/shell"
-import { closeLeadModal } from "./store"
 
 type LeadForkProps = {
   leadId: string
   titleId: string
   descriptionId: string
+  onStartWizard: () => void
   onWhatsAppDone: () => void
 }
 
@@ -17,14 +18,14 @@ function buildWhatsAppHref() {
 }
 
 /**
- * Pós-cadastro rápido. O CTA do wizard (8 passos) foi desconectado
- * até existir política de privacidade funcional + checkbox LGPD
- * (PENDENCIAS.md item 1). LeadWizard.tsx permanece no repo, sem entrada.
+ * Pós-cadastro rápido — “Quase lá!”:
+ * pesquisa (wizard 8 passos) ou WhatsApp.
  */
 export default function LeadFork({
   leadId,
   titleId,
   descriptionId,
+  onStartWizard,
   onWhatsAppDone,
 }: LeadForkProps) {
   const [busy, setBusy] = useState(false)
@@ -52,21 +53,35 @@ export default function LeadFork({
     <div className="lead-fork">
       <div className="lead-fork-header">
         <h2 id={titleId} className="lead-fork-title">
-          Recebemos seu contato
+          Quase lá!
         </h2>
         <p id={descriptionId} className="lead-fork-desc">
-          Em breve a equipe Gênesis retorna com as informações do Nature.
+          Você pode completar seu perfil agora ou falar direto pelo WhatsApp.
         </p>
       </div>
 
-      <button
-        type="button"
-        className="lead-fork-primary"
-        onClick={closeLeadModal}
-        disabled={busy}
-      >
-        Fechar
-      </button>
+      <div className="lead-fork-card">
+        <div className="lead-fork-card-row">
+          <span className="lead-fork-icon" aria-hidden="true">
+            <ClipboardList size={22} strokeWidth={1.75} />
+          </span>
+          <div className="lead-fork-card-copy">
+            <p className="lead-fork-kicker">Caminho principal</p>
+            <p className="lead-fork-card-title">Completar cadastro</p>
+            <p className="lead-fork-card-desc">
+              Oito perguntas rápidas para personalizar o atendimento.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="lead-fork-primary"
+          onClick={onStartWizard}
+          disabled={busy}
+        >
+          Começar agora →
+        </button>
+      </div>
 
       <div className="lead-fork-divider" aria-hidden="true">
         <span>ou</span>

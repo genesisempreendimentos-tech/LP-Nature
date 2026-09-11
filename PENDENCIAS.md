@@ -5,26 +5,21 @@ Extraído de `_reversa_sdd/` antes da remoção dos artefatos do Reversa (2026-0
 
 ---
 
-## 1. Política de privacidade + consentimento LGPD
+## 1. Política de privacidade (rota Gênesis soft-broken)
 
-Bloqueia o lançamento do **cadastro estendido** (fluxo de 8 passos / `PATCH`).
+O cadastro completo (wizard 8 passos) foi **religado**, com checkbox de
+aceite no formulário rápido apontando para privacidade + cookies.
 
-O link do rodapé (`https://genesisempreendimentos.com.br/politicas`) é o
-MESMO usado no rodapé institucional oficial da Gênesis (confirmado no
-bundle do site deles) — não é um link nosso errado. Porém, testado ao
-vivo (curl + navegador real): a rota retorna 200 mas renderiza a HOME
-do site, não o conteúdo da política. `/politica-de-privacidade/`
-(alternativa também real do domínio) falha do mesmo jeito. Como
-controle: `/politica-cookies` funciona normalmente — ou seja, o site
-da Gênesis não está todo quebrado, só a rota de privacidade.
+Ainda falta: a rota
+`https://genesisempreendimentos.com.br/politicas` retorna 200 mas
+renderiza a HOME (não o conteúdo da política). `/politica-de-privacidade/`
+falha do mesmo jeito. Controle: `/politica-cookies` funciona.
 
-Falta, além do checkbox de consentimento e do ok jurídico:
-**avisar a Gênesis que a própria política de privacidade dela está
-soft-broken no site institucional** — isso não é algo que o Nature
-resolve, é um problema no domínio deles.
+**Avisar a Gênesis / TI** para corrigir a política no site institucional.
+O checkbox já existe no Nature; o link oficial continua soft-broken do
+lado deles.
 
-**Depende de:** jurídico / negócio (checkbox + ok) **e** Gênesis / TI
-deles (corrigir a rota quebrada no próprio site institucional).
+**Depende de:** Gênesis / TI (corrigir a rota no domínio institucional).
 
 ---
 

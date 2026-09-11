@@ -5,8 +5,9 @@ import { IMaskInput } from "react-imask"
 import { ArrowUpRight, X } from "lucide-react"
 import { createLead, LeadApiError } from "./leadsClient"
 import LeadFork from "./LeadFork"
-import { LeadThanks } from "./LeadWizard"
+import LeadWizard, { LeadThanks } from "./LeadWizard"
 import { trackMeta } from "../../lib/metaPixel"
+import { shellFooter } from "../../data/shell"
 import {
   $leadModalOpen,
   closeLeadModal,
@@ -15,17 +16,19 @@ import {
 } from "./store"
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PRIVACY_HREF = shellFooter.privacyHref
+const COOKIES_HREF = "https://genesisempreendimentos.com.br/politica-cookies"
 
 type FieldErrors = {
   name?: string
   email?: string
   phone?: string
+  consent?: string
   form?: string
   notice?: string
 }
 
-type Phase = "form" | "fork" | "thanks"
-// "wizard" desconectado (LGPD) — LeadWizard.tsx permanece no repo sem entrada.
+type Phase = "form" | "fork" | "wizard" | "thanks"
 
 function digitsOnly(value: string) {
   return value.replace(/\D/g, "")
@@ -40,6 +43,7 @@ export default function LeadModalIsland() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
+  const [consent, setConsent] = useState(false)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [phase, setPhase] = useState<Phase>("form")
@@ -50,6 +54,7 @@ export default function LeadModalIsland() {
     setName("")
     setEmail("")
     setPhone("")
+    setConsent(false)
     setErrors({})
     setSubmitting(false)
     setPhase("form")
@@ -64,6 +69,9 @@ export default function LeadModalIsland() {
       next.email = "Informe um e-mail válido."
     if (digitsOnly(phone).length !== 11) {
       next.phone = "Informe o telefone completo com DDD (11 dígitos)."
+    }
+    if (!consent) {
+      next.consent = "Aceite a política de privacidade para continuar."
     }
     return next
   }
@@ -106,7 +114,11 @@ export default function LeadModalIsland() {
     <Dialog.Root
       open={isOpen}
       onOpenChange={(open) => {
-        if (!open) closeLeadModal()
+        if (!open) {
+          // Wizard: não fecha no overlay/Esc — só pelos CTAs internos.
+          if (phase === "wizard") return
+          closeLeadModal()
+        }
       }}
     >
       <Dialog.Portal>
@@ -130,13 +142,21 @@ export default function LeadModalIsland() {
               document.querySelector(".harness-cta") as HTMLElement | null
             )?.focus()
           }}
+          onEscapeKeyDown={(event) => {
+            if (phase === "wizard") event.preventDefault()
+          }}
+          onPointerDownOutside={(event) => {
+            if (phase === "wizard") event.preventDefault()
+          }}
         >
           {phase !== "thanks" && (
             <div className="lead-modal-top">
               <p className="eyebrow">NATURE RESIDENCIAL</p>
-              <Dialog.Close className="lead-modal-close" aria-label="Fechar">
-                <X size={20} strokeWidth={1.6} />
-              </Dialog.Close>
+              {phase !== "wizard" && (
+                <Dialog.Close className="lead-modal-close" aria-label="Fechar">
+                  <X size={20} strokeWidth={1.6} />
+                </Dialog.Close>
+              )}
             </div>
           )}
 
@@ -224,6 +244,32 @@ export default function LeadModalIsland() {
                   )}
                 </label>
 
+                <label className="lead-modal-consent" htmlFor="lead-island-consent">
+                  <input
+                    id="lead-island-consent"
+                    name="consent"
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(event) => setConsent(event.target.checked)}
+                    aria-invalid={Boolean(errors.consent)}
+                    disabled={submitting}
+                  />
+                  <span>
+                    Li e aceito a{" "}
+                    <a href={PRIVACY_HREF} target="_blank" rel="noopener noreferrer">
+                      política de privacidade
+                    </a>{" "}
+                    e a{" "}
+                    <a href={COOKIES_HREF} target="_blank" rel="noopener noreferrer">
+                      política de cookies
+                    </a>
+                    .
+                  </span>
+                </label>
+                {errors.consent && (
+                  <span className="lead-modal-error">{errors.consent}</span>
+                )}
+
                 {errors.notice && (
                   <p className="lead-modal-notice" role="status">
                     {errors.notice}
@@ -259,25 +305,37 @@ export default function LeadModalIsland() {
           {phase === "fork" && leadId && (
             <>
               <Dialog.Title id={titleId} className="sr-only">
-                Recebemos seu contato
+                Quase lá!
               </Dialog.Title>
               <Dialog.Description id={descriptionId} className="sr-only">
-                Cadastro recebido. Feche ou fale pelo WhatsApp.
+                Complete o cadastro ou fale pelo WhatsApp.
               </Dialog.Description>
               <LeadFork
                 leadId={leadId}
                 titleId={`${titleId}-fork`}
                 descriptionId={`${descriptionId}-fork`}
+                onStartWizard={() => setPhase("wizard")}
                 onWhatsAppDone={closeLeadModal}
               />
             </>
           )}
 
-          {/*
-            Cadastro completo (LeadWizard) desconectado — sem setPhase("wizard").
-            Para religar: reimportar LeadWizard, restaurar phase "wizard" e o CTA
-            em LeadFork (PENDENCIAS.md item 1 — LGPD).
-          */}
+          {phase === "wizard" && leadId && (
+            <>
+              <Dialog.Title id={titleId} className="sr-only">
+                Completar cadastro
+              </Dialog.Title>
+              <Dialog.Description id={descriptionId} className="sr-only">
+                Responda as perguntas do perfil.
+              </Dialog.Description>
+              <LeadWizard
+                leadId={leadId}
+                titleId={`${titleId}-wizard`}
+                descriptionId={`${descriptionId}-wizard`}
+                onComplete={() => setPhase("thanks")}
+              />
+            </>
+          )}
 
           {phase === "thanks" && (
             <>

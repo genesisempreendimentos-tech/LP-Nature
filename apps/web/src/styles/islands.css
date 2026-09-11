@@ -336,6 +336,34 @@ button {
   font-weight: 500;
 }
 
+.lead-modal-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 0;
+  color: #64725e;
+  font: 400 12px / 1.55 var(--font-body);
+  cursor: pointer;
+}
+
+.lead-modal-consent input {
+  margin-top: 3px;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-accent, #5c6450);
+}
+
+.lead-modal-consent a {
+  color: #304b3a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lead-modal-consent a:hover {
+  color: var(--color-accent, #5c6450);
+}
+
 .lead-modal-submit {
   width: 100%;
   margin-top: 8px;

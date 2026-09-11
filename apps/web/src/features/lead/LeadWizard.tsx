@@ -103,9 +103,7 @@ export default function LeadWizard({
 
       if (isLast) {
         // fbq('track', 'CompleteRegistration');
-        // TODO: disparar quando o fluxo de cadastro completo (8 passos)
-        // for implementado — hoje bloqueado por PENDENCIAS.md item 1 (LGPD)
-        // Nota: o wizard técnico já existe; manter desligado até ok jurídico.
+        // Ativar Meta CompleteRegistration quando marketing confirmar o evento.
         onComplete()
         return
       }
