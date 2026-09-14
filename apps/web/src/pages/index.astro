@@ -10,6 +10,7 @@ import Footer from "../features/shell/Footer.astro"
 import LeadModalIsland from "../features/lead/LeadModalIsland"
 import LeadFabIsland from "../features/lead/LeadFabIsland"
 import CookieConsentBanner from "../features/tracking/CookieConsentBanner"
+import TrackingBoot from "../features/tracking/TrackingBoot"
 import PreloaderIsland from "../features/shell/PreloaderIsland"
 import Hero from "../features/hero/Hero.astro"
 import HeroEntrance from "../features/hero/HeroEntrance"
@@ -91,6 +92,7 @@ import "../styles/location.css"
     <HeaderIsland client:only="react" />
     <HeroEntrance client:load />
     <MarketingRevealBoot client:load />
+    <TrackingBoot client:load />
 
     <main id="conteudo">
       <Hero />
