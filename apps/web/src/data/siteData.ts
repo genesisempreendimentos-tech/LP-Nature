@@ -93,12 +93,12 @@ export const siteData = {
           "https://wp.residencialnature.com.br/wp-content/uploads/2026/02/benfeitorias-nature-2.png",
       },
       {
-        name: "Área gourmet",
+        name: "Churrasqueira",
         image:
           "https://wp.residencialnature.com.br/wp-content/uploads/2026/02/benfeitorias-nature-3.png",
       },
       {
-        name: "Área gourmet",
+        name: "Sala de jogos",
         image:
           "https://wp.residencialnature.com.br/wp-content/uploads/2026/02/benfeitorias-nature-4.png",
       },
@@ -118,7 +118,7 @@ export const siteData = {
           "https://wp.residencialnature.com.br/wp-content/uploads/2026/02/benfeitorias-nature-7.png",
       },
       {
-        name: "Área gourmet",
+        name: "Piscina",
         image:
           "https://wp.residencialnature.com.br/wp-content/uploads/2026/02/benfeitorias-nature-8.png",
       },
