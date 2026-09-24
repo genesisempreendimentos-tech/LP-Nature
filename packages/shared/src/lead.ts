@@ -6,11 +6,17 @@
  * `pagina_origem` NÃO vem do cliente — definida no servidor via PAGINA_ORIGEM.
  */
 
+import type { UtmTouch } from "./utm"
+
 /** Body JSON do POST /api/leads (contrato atual em produção). */
 export type LeadCreatePayload = {
   nome: string
   email: string
   telefone: string
+  /** First-touch UTM (cookie); opcional / null se ausente. */
+  utm_first?: UtmTouch | null
+  /** Last-touch UTM (cookie); opcional / null se ausente. */
+  utm_last?: UtmTouch | null
 }
 
 /** Resposta 201 do POST /api/leads. */

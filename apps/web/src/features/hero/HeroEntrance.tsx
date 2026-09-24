@@ -81,6 +81,23 @@ export default function HeroEntrance() {
           },
         )
 
+        const badge = hero.querySelector(".hero-dezconto-badge")
+        if (badge) {
+          gsap.fromTo(
+            badge,
+            { opacity: 0, scale: 0.55, rotate: -22, y: 20 },
+            {
+              opacity: 1,
+              scale: 1,
+              rotate: -8,
+              y: 0,
+              duration: 1.05,
+              delay: 0.55,
+              ease: natureEase,
+            },
+          )
+        }
+
         const facts = hero.querySelector(".hero-facts")
         if (facts) {
           const factsTimeline = gsap.timeline({

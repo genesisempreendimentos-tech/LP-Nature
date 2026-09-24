@@ -1,0 +1,216 @@
+/* Feirão DezConto — escopo isolado (não vaza tokens pro Nature) */
+
+.dezconto-banner {
+  --dezconto-orange: #f15a24;
+  --dezconto-orange-deep: #d94816;
+  --dezconto-ink: #1a120e;
+  --dezconto-cream: #fff8f2;
+
+  width: 100%;
+  background: var(--dezconto-orange);
+  color: var(--dezconto-cream);
+  pointer-events: auto;
+}
+
+.dezconto-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 10px 22px;
+  min-height: 52px;
+  box-sizing: border-box;
+}
+
+.dezconto-banner-brand {
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.dezconto-banner-brand:focus-visible {
+  outline: 2px solid var(--dezconto-cream);
+  outline-offset: 3px;
+}
+
+.dezconto-banner-logo {
+  display: block;
+  width: clamp(120px, 22vw, 168px);
+  height: 28px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.dezconto-banner-cta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  background: var(--dezconto-cream);
+  color: var(--dezconto-ink);
+  font-family: var(--font-nav, "Montserrat", system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: background 160ms ease, color 160ms ease, transform 140ms ease;
+}
+
+.dezconto-banner-cta:hover {
+  background: var(--dezconto-ink);
+  color: var(--dezconto-cream);
+}
+
+.dezconto-banner-cta:active {
+  transform: scale(0.98);
+}
+
+.dezconto-banner-cta:focus-visible {
+  outline: 2px solid var(--dezconto-cream);
+  outline-offset: 3px;
+}
+
+/* Slot no header: faixa sai de trás do pill branco */
+.header-stack {
+  position: relative;
+  width: 100%;
+  max-width: 1192px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  pointer-events: none;
+}
+
+.header-stack .header-pill {
+  z-index: 2;
+}
+
+.header-dezconto-slot {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  max-height: 0;
+  margin-top: -2px;
+  pointer-events: none;
+  transition: max-height 480ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.header-dezconto-slot[data-visible="true"] {
+  max-height: 64px;
+  pointer-events: auto;
+}
+
+.header-dezconto-banner {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 480ms cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.header-dezconto-slot[data-visible="true"] .header-dezconto-banner {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Selo do Hero — inclinado; entrada via GSAP (texto + logo juntos) */
+.hero-dezconto-badge {
+  position: absolute;
+  top: calc(108px + 12px + env(safe-area-inset-top, 0px));
+  right: max(16px, calc((100% - min(1192px, calc(100% - 40px))) / 2));
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: clamp(128px, 16vw, 168px);
+  text-decoration: none;
+  color: #fff8f2;
+  filter: drop-shadow(0 12px 28px rgba(12, 20, 14, 0.45));
+  transform: rotate(-8deg);
+  transform-origin: center center;
+}
+
+.hero-dezconto-caption {
+  display: block;
+  max-width: 12em;
+  margin: 0 0 -0.35em;
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-nav, "Montserrat", system-ui, sans-serif);
+  font-size: clamp(9px, 0.95vw, 11px);
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255, 248, 242, 0.88);
+  text-wrap: balance;
+}
+
+.hero-dezconto-badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  margin-top: -12%;
+}
+
+.hero-dezconto-badge:hover img {
+  filter: brightness(1.06);
+}
+
+.hero-dezconto-badge:focus-visible {
+  outline: 2px solid #fff8f2;
+  outline-offset: 6px;
+}
+
+@media (max-width: 600px) {
+  .dezconto-banner-inner {
+    padding: 8px 16px;
+    min-height: 48px;
+    gap: 12px;
+  }
+
+  .dezconto-banner-logo {
+    width: clamp(100px, 36vw, 140px);
+    height: 24px;
+  }
+
+  .dezconto-banner-cta {
+    padding: 9px 12px;
+    font-size: 10px;
+  }
+
+  .header-dezconto-slot[data-visible="true"] {
+    max-height: 56px;
+  }
+
+  .hero-dezconto-badge {
+    top: calc(96px + 10px + env(safe-area-inset-top, 0px));
+    right: 12px;
+    width: clamp(108px, 28vw, 136px);
+    gap: 1px;
+  }
+
+  .hero-dezconto-caption {
+    font-size: 8px;
+    max-width: 12em;
+    letter-spacing: 0.05em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-dezconto-slot,
+  .header-dezconto-banner {
+    transition: none;
+  }
+}

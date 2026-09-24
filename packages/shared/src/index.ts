@@ -8,6 +8,8 @@ export type {
 
 export { LEAD_PATCH_ALLOWLIST, LEAD_PATCH_BOOLEAN_FIELDS } from "./lead"
 
+export type { UtmTouch, UtmPair } from "./utm"
+
 export type {
   TrackingConsent,
   TrackingSimpleField,

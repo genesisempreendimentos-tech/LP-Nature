@@ -3,8 +3,10 @@
  * Hero literal — markup/CSS do legado (Hero.tsx).
  * Header fica no shell (DEV: Header fora do Hero no Astro).
  * CTA hidratado; facts usam reveal via appReady.
+ * Feirão DezConto: selo no canto (faixa fica no header sticky).
  */
 import HeroCta from "./HeroCta"
+import { DEZCONTO_CAMPAIGN_URL } from "../../data/dezconto"
 ---
 
 <section id="inicio" class="nature-hero" data-hero-ready>
@@ -18,6 +20,24 @@ import HeroCta from "./HeroCta"
       />
     </div>
     <div class="hero-shade" aria-hidden="true"></div>
+
+    <a
+      class="hero-dezconto-badge"
+      href={DEZCONTO_CAMPAIGN_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Feirão DezConto — abrir em nova aba"
+    >
+      <span class="hero-dezconto-caption">Esse empreendimento faz parte do:</span>
+      <img
+        src="/brand/logo-completed.svg"
+        alt=""
+        width="168"
+        height="168"
+        decoding="async"
+      />
+    </a>
+
     <div class="hero-content shell">
       <h1 class="hero-title">
         A vida que você conquistou merece <em>um endereço à altura.</em>

@@ -4,6 +4,7 @@ import type {
   LeadPatchPayload,
   LeadPatchResponse,
 } from "@nature/shared"
+import { getUtmPair } from "../../lib/utmTracking"
 
 export type {
   LeadCreatePayload,
@@ -49,10 +50,17 @@ function errorMessage(data: unknown, fallback: string) {
 export async function createLead(
   payload: LeadCreatePayload,
 ): Promise<LeadCreateResponse> {
+  const utms = getUtmPair()
   const response = await fetch(LEADS_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      ...payload,
+      utm_first:
+        payload.utm_first !== undefined ? payload.utm_first : utms.utm_first,
+      utm_last:
+        payload.utm_last !== undefined ? payload.utm_last : utms.utm_last,
+    }),
   })
 
   const data = await readJson(response)

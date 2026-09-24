@@ -5,6 +5,7 @@ import { openLeadModal } from "../lead/store"
 import { $appReady, bindAppReadyFromDom } from "./appReady"
 import NatureLogo from "./NatureLogo"
 import { shellNav } from "../../data/shell"
+import { DEZCONTO_CAMPAIGN_URL } from "../../data/dezconto"
 import { gsap, natureEase } from "../../motion/gsap"
 
 /** Solidifica >80; só volta transparente ≤40 (paridade Header.tsx / BR-MIGRAR-014). */
@@ -109,68 +110,110 @@ export default function HeaderIsland() {
   }, [menuOpen])
 
   const surfaceOn = isSolid || menuOpen
+  const showDezconto = isSolid
 
   return (
     <header ref={headerRef} className="site-header" data-shell-header>
-      <div
-        className="header-pill"
-        data-scrolled={surfaceOn ? "true" : "false"}
-      >
-        <a
-          href="#inicio"
-          className="brand-link header-brand"
-          aria-label="Nature Residencial — início"
-          onClick={() => setMenuOpen(false)}
+      <div className="header-stack">
+        <div
+          className="header-pill"
+          data-scrolled={surfaceOn ? "true" : "false"}
         >
-          <NatureLogo />
-        </a>
-
-        <button
-          ref={toggleRef}
-          type="button"
-          className="menu-toggle"
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={menuOpen}
-          aria-controls="main-nav"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-
-        <nav
-          id="main-nav"
-          className={`header-nav main-nav${menuOpen ? " is-open" : ""}`}
-          aria-label="Navegação principal"
-        >
-          <div className="header-nav-links">
-            {shellNav.map((item) => (
-              <a
-                key={item.id}
-                className="nav-item"
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
+          <a
+            href="#inicio"
+            className="brand-link header-brand"
+            aria-label="Nature Residencial — início"
+            onClick={() => setMenuOpen(false)}
+          >
+            <NatureLogo />
+          </a>
 
           <button
+            ref={toggleRef}
             type="button"
-            className="header-cta nav-contact"
-            onClick={() => {
-              setMenuOpen(false)
-              openLeadModal()
-            }}
+            className="menu-toggle"
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={menuOpen}
+            aria-controls="main-nav"
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            <span className="header-cta-label">
-              Conheça seu novo endereço <ArrowUpRight size={16} />
-            </span>
-            <span className="header-cta-fill" aria-hidden="true">
-              Conheça seu novo endereço <ArrowUpRight size={16} />
-            </span>
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-        </nav>
+
+          <nav
+            id="main-nav"
+            className={`header-nav main-nav${menuOpen ? " is-open" : ""}`}
+            aria-label="Navegação principal"
+          >
+            <div className="header-nav-links">
+              {shellNav.map((item) => (
+                <a
+                  key={item.id}
+                  className="nav-item"
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="header-cta nav-contact"
+              onClick={() => {
+                setMenuOpen(false)
+                openLeadModal()
+              }}
+            >
+              <span className="header-cta-label">
+                Conheça seu novo endereço <ArrowUpRight size={16} />
+              </span>
+              <span className="header-cta-fill" aria-hidden="true">
+                Conheça seu novo endereço <ArrowUpRight size={16} />
+              </span>
+            </button>
+          </nav>
+        </div>
+
+        <div
+          className="header-dezconto-slot"
+          data-visible={showDezconto ? "true" : "false"}
+        >
+          <aside
+            className="dezconto-banner header-dezconto-banner"
+            aria-label="Feirão DezConto"
+            aria-hidden={!showDezconto}
+          >
+            <div className="dezconto-banner-inner">
+              <a
+                className="dezconto-banner-brand"
+                href={DEZCONTO_CAMPAIGN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Feirão DezConto — abrir em nova aba"
+                tabIndex={showDezconto ? 0 : -1}
+              >
+                <img
+                  className="dezconto-banner-logo"
+                  src="/brand/dezconto-text.svg"
+                  alt="Feirão DezConto"
+                  width="168"
+                  height="28"
+                />
+              </a>
+              <a
+                className="dezconto-banner-cta"
+                href={DEZCONTO_CAMPAIGN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={showDezconto ? 0 : -1}
+              >
+                Quero saber mais!
+              </a>
+            </div>
+          </aside>
+        </div>
       </div>
     </header>
   )

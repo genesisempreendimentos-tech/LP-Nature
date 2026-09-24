@@ -6,6 +6,8 @@ import {
   type TrackingConsent,
   type TrackingSanitizedPayload,
 } from "../../packages/shared/src/tracking.ts"
+import type { UtmTouch } from "../../packages/shared/src/utm.ts"
+import { flattenUtmColumns, parseUtmTouch } from "./utm.ts"
 
 const COMPLETE_SET = new Set<string>(TRACKING_COMPLETE_FIELDS)
 const CONSENT_SET = new Set<string>(TRACKING_CONSENT)
@@ -131,6 +133,10 @@ export function parseTrackingBody(
     data.origem = body.origem.trim()
   }
 
+  // UTM — essencial; independente de consentimento.
+  data.utm_first = parseUtmTouch(body.utm_first)
+  data.utm_last = parseUtmTouch(body.utm_last)
+
   // Client pode tentar mandar pagina_origem — ignorado (garantia server-side).
   void body.pagina_origem
 
@@ -230,6 +236,8 @@ export function parseTrackingBody(
       key === "traffic_type" ||
       key === "origem_captura" ||
       key === "criado_em" ||
+      key === "utm_first" ||
+      key === "utm_last" ||
       COMPLETE_SET.has(key)
     ) {
       continue
@@ -261,11 +269,30 @@ export type AcessosNatureInsertRow = {
   regiao?: string | null
   user_agent?: string | null
   usuario_id?: string | null
+  utm_first_source?: string | null
+  utm_first_medium?: string | null
+  utm_first_campaign?: string | null
+  utm_first_term?: string | null
+  utm_first_content?: string | null
+  utm_first_landing_page?: string | null
+  utm_first_referrer?: string | null
+  utm_first_at?: string | null
+  utm_last_source?: string | null
+  utm_last_medium?: string | null
+  utm_last_campaign?: string | null
+  utm_last_term?: string | null
+  utm_last_content?: string | null
+  utm_last_landing_page?: string | null
+  utm_last_referrer?: string | null
+  utm_last_at?: string | null
 }
 
 export function toAcessosNatureRow(
   data: TrackingSanitizedPayload,
 ): AcessosNatureInsertRow {
+  const utmFirst = flattenUtmColumns("utm_first", data.utm_first)
+  const utmLast = flattenUtmColumns("utm_last", data.utm_last)
+
   const row: AcessosNatureInsertRow = {
     id: randomUUID(),
     criado_em: data.criado_em,
@@ -279,6 +306,8 @@ export function toAcessosNatureRow(
       typeof data.dispositivo === "string" && data.dispositivo.trim()
         ? data.dispositivo.trim()
         : DISPOSITIVO_OMITIDO,
+    ...utmFirst,
+    ...utmLast,
   }
 
   if (data.origem) row.origem = data.origem
@@ -309,3 +338,6 @@ export function toAcessosNatureRow(
 
   return row
 }
+
+// re-export type for callers that need UtmTouch through this module
+export type { UtmTouch }

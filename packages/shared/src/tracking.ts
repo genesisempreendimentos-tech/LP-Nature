@@ -3,6 +3,8 @@
  * Colunas confirmadas por dump/information_schema (2026-09-11).
  */
 
+import type { UtmTouch } from "./utm"
+
 export const TRACKING_CONSENT = ["aceito", "negado"] as const
 export type TrackingConsent = (typeof TRACKING_CONSENT)[number]
 
@@ -53,6 +55,10 @@ export type TrackingClientPayload = {
   pagina?: string
   /** Canal de origem (coluna `origem`). Default DB: "direto". */
   origem?: string
+  /** First-touch UTM — essencial; independente de consentimento. */
+  utm_first?: UtmTouch | null
+  /** Last-touch UTM — essencial; independente de consentimento. */
+  utm_last?: UtmTouch | null
 } & Partial<Record<TrackingCompleteField, string | number | boolean | null>>
 
 /**
@@ -69,6 +75,8 @@ export type TrackingSanitizedPayload = {
   criado_em: string
   pagina: string
   origem?: string
+  utm_first?: UtmTouch | null
+  utm_last?: UtmTouch | null
 } & Partial<Record<TrackingCompleteField, string | number | boolean | null>>
 
 export type TrackingCreateResponse = {

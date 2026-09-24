@@ -16,6 +16,7 @@ import {
 } from "../../packages/shared/src/lead.ts"
 import { getLeadsTableName, getPool } from "./db.mjs"
 import { parseTrackingBody, toAcessosNatureRow } from "./tracking.ts"
+import { flattenUtmColumns, parseUtmTouch } from "./utm.ts"
 import { getSupabaseAdmin } from "./supabase.ts"
 
 const monorepoRoot = path.resolve(
@@ -74,6 +75,8 @@ function validateCreateBody(body: Record<string, unknown>): {
     nome,
     email,
     telefone: telefoneRaw || telefoneDigits,
+    utm_first: parseUtmTouch(body.utm_first),
+    utm_last: parseUtmTouch(body.utm_last),
   }
 
   return {
@@ -240,12 +243,43 @@ app.post("/api/leads", leadCreateLimiter, async (req, res) => {
 
   try {
     const pool = getPool()
+    const first = flattenUtmColumns("utm_first", data.utm_first)
+    const last = flattenUtmColumns("utm_last", data.utm_last)
+    // canal/parameter: NÃO popular com utm_source/campaign — valores históricos
+    // em site_nature são rótulos humanos (Facebook, Site, Whatsapp…), não UTM cru.
     const result = await pool.query(
       `INSERT INTO ${table}
-         (name, email, phone, pagina_origem)
-       VALUES ($1, $2, $3, $4)
+         (name, email, phone, pagina_origem,
+          utm_first_source, utm_first_medium, utm_first_campaign, utm_first_term,
+          utm_first_content, utm_first_landing_page, utm_first_referrer, utm_first_at,
+          utm_last_source, utm_last_medium, utm_last_campaign, utm_last_term,
+          utm_last_content, utm_last_landing_page, utm_last_referrer, utm_last_at)
+       VALUES ($1, $2, $3, $4,
+          $5, $6, $7, $8, $9, $10, $11, $12,
+          $13, $14, $15, $16, $17, $18, $19, $20)
        RETURNING id`,
-      [data.nome, data.email, data.telefone, PAGINA_ORIGEM],
+      [
+        data.nome,
+        data.email,
+        data.telefone,
+        PAGINA_ORIGEM,
+        first.utm_first_source,
+        first.utm_first_medium,
+        first.utm_first_campaign,
+        first.utm_first_term,
+        first.utm_first_content,
+        first.utm_first_landing_page,
+        first.utm_first_referrer,
+        first.utm_first_at,
+        last.utm_last_source,
+        last.utm_last_medium,
+        last.utm_last_campaign,
+        last.utm_last_term,
+        last.utm_last_content,
+        last.utm_last_landing_page,
+        last.utm_last_referrer,
+        last.utm_last_at,
+      ],
     )
     const insertedId = String(result.rows[0]?.id ?? "")
     if (!insertedId) {
