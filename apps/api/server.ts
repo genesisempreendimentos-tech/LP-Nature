@@ -14,7 +14,7 @@ import {
   LEAD_PATCH_ALLOWLIST,
   LEAD_PATCH_BOOLEAN_FIELDS,
 } from "../../packages/shared/src/lead.ts"
-import { getLeadsTableName, getPool } from "./db.mjs"
+import { getPool } from "./db.mjs"
 import { parseTrackingBody, toAcessosNatureRow } from "./tracking.ts"
 import { flattenUtmColumns, parseUtmTouch } from "./utm.ts"
 import { getSupabaseAdmin } from "./supabase.ts"
@@ -32,6 +32,24 @@ const UUID_PATTERN =
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const PAGINA_ORIGEM =
   process.env.PAGINA_ORIGEM?.trim() || "Página de Vendas"
+// Tabela única de leads (Neon) compartilhada por todas as LPs.
+const LEADS_TABLE = "public.leads"
+const ORIGEM_TIPO = "site"
+const ORIGEM_DETALHE = "lpa"
+const ORIGEM_EMPREENDIMENTO = "Nature"
+// Campo do contrato PATCH → coluna em public.leads. Campos sem coluna
+// equivalente (monthly_investment, profile_completed) são ignorados.
+const PATCH_COLUMN_MAP: Partial<Record<keyof LeadPatchPayload, string>> = {
+  relationship_status: "estado_civil",
+  children_status: "filhos",
+  profession: "profissao",
+  monthly_income: "renda_familiar",
+  sexo: "genero",
+  current_city: "cidade",
+  birth_date: "data_nascimento",
+  profile_type: "perfil",
+  whatsapp_clicked: "whatsapp_clicked",
+}
 const PORT = Number(process.env.API_PORT || 8787)
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN?.trim()
 
@@ -74,7 +92,7 @@ function validateCreateBody(body: Record<string, unknown>): {
   const data: LeadCreatePayload = {
     nome,
     email,
-    telefone: telefoneRaw || telefoneDigits,
+    telefone: telefoneDigits,
     utm_first: parseUtmTouch(body.utm_first),
     utm_last: parseUtmTouch(body.utm_last),
   }
@@ -230,39 +248,30 @@ app.post("/api/leads", leadCreateLimiter, async (req, res) => {
     return json(res, 400, { error: "Dados inválidos", fields: errors })
   }
 
-  let table: string
-  try {
-    table = getLeadsTableName()
-  } catch (err) {
-    console.error((err as Error).message)
-    return json(res, 503, {
-      error:
-        "API não configurada (tabela). Use banco de desenvolvimento até o admin confirmar.",
-    })
-  }
-
   try {
     const pool = getPool()
     const first = flattenUtmColumns("utm_first", data.utm_first)
     const last = flattenUtmColumns("utm_last", data.utm_last)
-    // canal/parameter: NÃO popular com utm_source/campaign — valores históricos
-    // em site_nature são rótulos humanos (Facebook, Site, Whatsapp…), não UTM cru.
     const result = await pool.query(
-      `INSERT INTO ${table}
-         (name, email, phone, pagina_origem,
+      `INSERT INTO ${LEADS_TABLE}
+         (nome, email, telefone,
+          origem_tipo, origem_detalhe, origem_empreendimento_interesse,
           utm_first_source, utm_first_medium, utm_first_campaign, utm_first_term,
           utm_first_content, utm_first_landing_page, utm_first_referrer, utm_first_at,
           utm_last_source, utm_last_medium, utm_last_campaign, utm_last_term,
           utm_last_content, utm_last_landing_page, utm_last_referrer, utm_last_at)
-       VALUES ($1, $2, $3, $4,
-          $5, $6, $7, $8, $9, $10, $11, $12,
-          $13, $14, $15, $16, $17, $18, $19, $20)
+       VALUES ($1, $2, $3,
+          $4, $5, $6,
+          $7, $8, $9, $10, $11, $12, $13, $14,
+          $15, $16, $17, $18, $19, $20, $21, $22)
        RETURNING id`,
       [
         data.nome,
         data.email,
         data.telefone,
-        PAGINA_ORIGEM,
+        ORIGEM_TIPO,
+        ORIGEM_DETALHE,
+        ORIGEM_EMPREENDIMENTO,
         first.utm_first_source,
         first.utm_first_medium,
         first.utm_first_campaign,
@@ -289,25 +298,6 @@ app.post("/api/leads", leadCreateLimiter, async (req, res) => {
     return json(res, 201, response)
   } catch (err) {
     console.error("[nature-api] POST /api/leads falhou:", err)
-    const pgErr = err as { code?: string }
-    if (pgErr?.code === "23505") {
-      return json(res, 409, {
-        error:
-          "Esse e-mail já está cadastrado. Nossa equipe já tem seu contato.",
-      })
-    }
-    if (pgErr?.code === "42P01") {
-      return json(res, 503, {
-        error:
-          "Tabela de leads não encontrada. Confirme LEADS_TABLE_NAME com o admin (dev only).",
-      })
-    }
-    if (pgErr?.code === "42703") {
-      return json(res, 503, {
-        error:
-          "Coluna ausente no schema (pagina_origem?). Migration pendente com o admin.",
-      })
-    }
     return json(res, 500, {
       error: "Erro ao salvar contato. Tente novamente.",
     })
@@ -330,42 +320,26 @@ app.patch("/api/leads/:id", leadPatchLimiter, async (req, res) => {
     return json(res, 400, { error: parsed.error ?? "Dados inválidos" })
   }
 
-  let table: string
-  try {
-    table = getLeadsTableName()
-  } catch (err) {
-    console.error((err as Error).message)
-    return json(res, 503, {
-      error:
-        "API não configurada (tabela). Use banco de desenvolvimento até o admin confirmar.",
-    })
-  }
-
-  const entries = Object.entries(parsed.data).filter(
-    ([, value]) => value !== undefined,
-  )
-  if (entries.length === 0) {
-    return json(res, 400, { error: "Body vazio." })
-  }
-
   const setFragments: string[] = []
   const values: unknown[] = []
   let i = 1
-  for (const [col, value] of entries) {
-    // col vem só da allowlist — seguro para interpolar como identificador.
+  for (const [field, value] of Object.entries(parsed.data)) {
+    // Coluna vem só do PATCH_COLUMN_MAP — seguro para interpolar como identificador.
+    const col = PATCH_COLUMN_MAP[field as keyof LeadPatchPayload]
+    if (!col || value === undefined) continue
     setFragments.push(`${col} = $${i}`)
     values.push(value)
     i += 1
   }
   setFragments.push(`updated_at = now()`)
-  values.push(id)
+  values.push(id, ORIGEM_TIPO, ORIGEM_DETALHE)
 
   try {
     const pool = getPool()
     const result = await pool.query(
-      `UPDATE ${table}
+      `UPDATE ${LEADS_TABLE}
        SET ${setFragments.join(", ")}
-       WHERE id = $${i}
+       WHERE id = $${i} AND origem_tipo = $${i + 1} AND origem_detalhe = $${i + 2}
        RETURNING id`,
       values,
     )
@@ -384,11 +358,6 @@ app.patch("/api/leads/:id", leadPatchLimiter, async (req, res) => {
     if (pgErr?.code === "23514") {
       return json(res, 400, {
         error: "Valor fora do permitido para este campo.",
-      })
-    }
-    if (pgErr?.code === "42703") {
-      return json(res, 503, {
-        error: "Coluna ausente no schema. Migration pendente com o admin.",
       })
     }
     return json(res, 500, {

@@ -22,11 +22,9 @@ module.exports = {
       watch: false,
       env: {
         NODE_ENV: "production",
-        LEADS_TABLE_NAME: "site_nature",
         PAGINA_ORIGEM: "Página de Vendas",
         ALLOWED_ORIGIN: "http://localhost:8443",
         API_PORT: "8787",
-        REQUIRE_CONFIRMED_TABLE: "false",
       },
     },
   ],

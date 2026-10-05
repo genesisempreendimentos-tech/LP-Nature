@@ -2,8 +2,8 @@
  * Contrato Lead — fonte única.
  *
  * Wire do POST (cliente → API): português `nome` / `email` / `telefone`.
- * Colunas Neon: `name` / `email` / `phone` (mapeadas só no apps/api).
- * `pagina_origem` NÃO vem do cliente — definida no servidor via PAGINA_ORIGEM.
+ * Colunas Neon (public.leads): `nome` / `email` / `telefone` (mapeadas só no apps/api).
+ * Origem (`origem_tipo`/`origem_detalhe`) NÃO vem do cliente — definida no servidor.
  */
 
 import type { UtmTouch } from "./utm"
@@ -25,8 +25,9 @@ export type LeadCreateResponse = {
 }
 
 /**
- * Allowlist PATCH — nomes e capitalização exatos das colunas em site_nature.
- * `monthly_income` = renda familiar (passo 4); `monthly_investment` legado com CHECK antigo.
+ * Allowlist PATCH — nomes do contrato; o apps/api mapeia para as colunas de
+ * public.leads (PATCH_COLUMN_MAP). `monthly_investment` e `profile_completed`
+ * não têm coluna em public.leads e são ignorados no servidor.
  */
 export const LEAD_PATCH_ALLOWLIST = [
   "relationship_status",

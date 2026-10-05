@@ -39,24 +39,3 @@ export function getPool() {
 
   return globalForPg.__naturePgPool
 }
-
-export function getLeadsTableName() {
-  const name = process.env.LEADS_TABLE_NAME?.trim()
-  if (!name) {
-    throw new Error("[nature-api] LEADS_TABLE_NAME não definido.")
-  }
-  if (
-    process.env.REQUIRE_CONFIRMED_TABLE === "true" &&
-    /SUBSTITUIR|PLACEHOLDER|TODO/i.test(name)
-  ) {
-    throw new Error(
-      "[nature-api] LEADS_TABLE_NAME ainda é placeholder. Admin Neon deve confirmar o nome.",
-    )
-  }
-  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
-    throw new Error(
-      "[nature-api] LEADS_TABLE_NAME inválido (use apenas [a-zA-Z0-9_]).",
-    )
-  }
-  return name
-}
