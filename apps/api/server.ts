@@ -254,21 +254,22 @@ app.post("/api/leads", leadCreateLimiter, async (req, res) => {
     const last = flattenUtmColumns("utm_last", data.utm_last)
     const result = await pool.query(
       `INSERT INTO ${LEADS_TABLE}
-         (nome, email, telefone,
+         (nome, email, telefone, empreendimento_interesse,
           origem_tipo, origem_detalhe, origem_empreendimento_interesse,
           utm_first_source, utm_first_medium, utm_first_campaign, utm_first_term,
           utm_first_content, utm_first_landing_page, utm_first_referrer, utm_first_at,
           utm_last_source, utm_last_medium, utm_last_campaign, utm_last_term,
           utm_last_content, utm_last_landing_page, utm_last_referrer, utm_last_at)
-       VALUES ($1, $2, $3,
-          $4, $5, $6,
-          $7, $8, $9, $10, $11, $12, $13, $14,
-          $15, $16, $17, $18, $19, $20, $21, $22)
+       VALUES ($1, $2, $3, $4,
+          $5, $6, $7,
+          $8, $9, $10, $11, $12, $13, $14, $15,
+          $16, $17, $18, $19, $20, $21, $22, $23)
        RETURNING id`,
       [
         data.nome,
         data.email,
         data.telefone,
+        ORIGEM_EMPREENDIMENTO,
         ORIGEM_TIPO,
         ORIGEM_DETALHE,
         ORIGEM_EMPREENDIMENTO,
