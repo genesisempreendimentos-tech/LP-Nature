@@ -111,6 +111,17 @@ import "../styles/location.css"
     <LeadModalIsland client:only="react" />
     <CookieConsentBanner client:only="react" />
 
+    <script>
+      import {
+        getTracking,
+        iniciarFormularioGlobal,
+      } from "../features/lead/formularioGlobal"
+      iniciarFormularioGlobal()
+      // Mantém o export do contrato getTracking no bundle (testes / diagnóstico).
+      ;(window as Window & { __natureGetTracking?: typeof getTracking }).__natureGetTracking =
+        getTracking
+    </script>
+
     <!-- ViewContent: uma vez por page load quando o footer entra na viewport -->
     <script is:inline>
       ;(function () {

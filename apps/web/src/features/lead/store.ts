@@ -1,4 +1,5 @@
 import { atom } from "nanostores"
+import { abrirFormularioGlobal } from "./formularioGlobal"
 
 export type LeadSession = {
   id: string
@@ -32,6 +33,7 @@ export function getLeadModalTrigger() {
 }
 
 export function openLeadModal() {
+  if (abrirFormularioGlobal()) return
   if (typeof document !== "undefined") {
     const active = document.activeElement
     leadModalTrigger =
