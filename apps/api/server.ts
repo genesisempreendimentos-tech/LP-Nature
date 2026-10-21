@@ -15,8 +15,14 @@ import {
   LEAD_PATCH_BOOLEAN_FIELDS,
 } from "../../packages/shared/src/lead.ts"
 import { getPool } from "./db.mjs"
+import {
+  insertLeadCreate,
+  LEADS_TABLE,
+  ORIGEM_DETALHE,
+  ORIGEM_TIPO,
+} from "./leadCreateQuery.ts"
 import { parseTrackingBody, toAcessosNatureRow } from "./tracking.ts"
-import { flattenUtmColumns, parseUtmTouch } from "./utm.ts"
+import { parseUtmTouch } from "./utm.ts"
 import { getSupabaseAdmin } from "./supabase.ts"
 
 const monorepoRoot = path.resolve(
@@ -32,11 +38,6 @@ const UUID_PATTERN =
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const PAGINA_ORIGEM =
   process.env.PAGINA_ORIGEM?.trim() || "Página de Vendas"
-// Tabela única de leads (Neon) compartilhada por todas as LPs.
-const LEADS_TABLE = "public.leads"
-const ORIGEM_TIPO = "site"
-const ORIGEM_DETALHE = "lpa"
-const ORIGEM_EMPREENDIMENTO = "Nature"
 // Campo do contrato PATCH → coluna em public.leads. Campos sem coluna
 // equivalente (monthly_investment, profile_completed) são ignorados.
 const PATCH_COLUMN_MAP: Partial<Record<keyof LeadPatchPayload, string>> = {
@@ -250,52 +251,11 @@ app.post("/api/leads", leadCreateLimiter, async (req, res) => {
 
   try {
     const pool = getPool()
-    const first = flattenUtmColumns("utm_first", data.utm_first)
-    const last = flattenUtmColumns("utm_last", data.utm_last)
-    const result = await pool.query(
-      `INSERT INTO ${LEADS_TABLE}
-         (nome, email, telefone, empreendimento_interesse,
-          origem_tipo, origem_detalhe, origem_empreendimento_interesse,
-          utm_first_source, utm_first_medium, utm_first_campaign, utm_first_term,
-          utm_first_content, utm_first_landing_page, utm_first_referrer, utm_first_at,
-          utm_last_source, utm_last_medium, utm_last_campaign, utm_last_term,
-          utm_last_content, utm_last_landing_page, utm_last_referrer, utm_last_at)
-       VALUES ($1, $2, $3, $4,
-          $5, $6, $7,
-          $8, $9, $10, $11, $12, $13, $14, $15,
-          $16, $17, $18, $19, $20, $21, $22, $23)
-       RETURNING id`,
-      [
-        data.nome,
-        data.email,
-        data.telefone,
-        ORIGEM_EMPREENDIMENTO,
-        ORIGEM_TIPO,
-        ORIGEM_DETALHE,
-        ORIGEM_EMPREENDIMENTO,
-        first.utm_first_source,
-        first.utm_first_medium,
-        first.utm_first_campaign,
-        first.utm_first_term,
-        first.utm_first_content,
-        first.utm_first_landing_page,
-        first.utm_first_referrer,
-        first.utm_first_at,
-        last.utm_last_source,
-        last.utm_last_medium,
-        last.utm_last_campaign,
-        last.utm_last_term,
-        last.utm_last_content,
-        last.utm_last_landing_page,
-        last.utm_last_referrer,
-        last.utm_last_at,
-      ],
-    )
-    const insertedId = String(result.rows[0]?.id ?? "")
-    if (!insertedId) {
-      return json(res, 500, { error: "Erro ao salvar contato. Tente novamente." })
+    const inserted = await insertLeadCreate(pool, data)
+    if ("error" in inserted) {
+      return json(res, inserted.status, { error: inserted.error })
     }
-    const response: LeadCreateResponse = { id: insertedId }
+    const response: LeadCreateResponse = { id: inserted.id }
     return json(res, 201, response)
   } catch (err) {
     console.error("[nature-api] POST /api/leads falhou:", err)
