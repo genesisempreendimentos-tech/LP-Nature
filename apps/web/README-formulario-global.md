@@ -19,8 +19,8 @@ Com a chave ligada em build de produção, `astro.config.mjs` exige base `https:
 
 - Boot: `iniciarFormularioGlobal()` no `index.astro` (após `load` + idle).
 - Abertura: primeira linha de `openLeadModal()` tenta `abrirFormularioGlobal()`; se falhar, abre o modal nativo.
-- Tracking: `getTracking()` lê cookies `nature_utm_first` / `nature_utm_last` e ids (`nature_sessao_id` do tracker ou efêmeros `nature_form_uid` / `nature_form_sid`). Sem PII.
-- Pixel: em `lead_created` chama `trackMeta("Lead")` uma vez por abertura (só produção real, nunca em DEV/prévia).
+- Tracking / atribuição do widget: `getTracking()` lê cookies `nature_utm_first` / `nature_utm_last` (opção A — permanecem para leads; o pageview usa `origem_bruta` em sessionStorage à parte) e ids (`nature_sessao_id` do tracker só após aceite de cookies, ou efêmeros `nature_form_uid` / `nature_form_sid`). Sem PII.
+- Pixel: Meta Pixel só carrega com consentimento `aceito`. Em `lead_created`, `trackMeta("Lead")` é no-op se o Pixel não estiver carregado; em produção real (`PUBLIC_FORMS_REAL=1`) dispara uma vez por abertura.
 
 ## Origem do lead (API)
 

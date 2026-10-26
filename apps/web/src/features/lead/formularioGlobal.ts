@@ -4,8 +4,8 @@
  *
  * getTracking / ids:
  * - first/last: cookies nature_utm_* (paridade com o lead nativo; sem consentimento).
- * - sessao_id: nature_sessao_id do tracker (runTracking) quando existir — o tracker
- *   grava em sessionStorage no pageview, sem exigir aceite LGPD.
+ * - sessao_id: nature_sessao_id do tracker (runTracking) quando existir — só após
+ *   aceite de cookies; senão usa efêmero nature_form_sid.
  * - usuario_id: a LP não tem id de usuário persistente; usa nature_form_uid efêmero.
  * - Sem UTM e sem ids do tracker: {} (não gera efêmeros à toa).
  * - Com UTM (ou id parcial): completa com UUIDs efêmeros (nature_form_uid / nature_form_sid)

@@ -42,43 +42,7 @@ import "../styles/location.css"
     />
     <link rel="icon" href="/brand/nature-symbol.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/brand/nature-symbol.svg" />
-    <!-- Meta Pixel Base — ID compartilhado com o site institucional -->
-    <script is:inline>
-      !(function (f, b, e, v, n, t, s) {
-        if (f.fbq) return
-        n = f.fbq = function () {
-          n.callMethod
-            ? n.callMethod.apply(n, arguments)
-            : n.queue.push(arguments)
-        }
-        if (!f._fbq) f._fbq = n
-        n.push = n
-        n.loaded = !0
-        n.version = "2.0"
-        n.queue = []
-        t = b.createElement(e)
-        t.async = !0
-        t.src = v
-        s = b.getElementsByTagName(e)[0]
-        s.parentNode.insertBefore(t, s)
-      })(
-        window,
-        document,
-        "script",
-        "https://connect.facebook.net/en_US/fbevents.js",
-      )
-      fbq("init", "2204287590401451")
-      fbq("track", "PageView")
-    </script>
-    <noscript>
-      <img
-        height="1"
-        width="1"
-        style="display:none"
-        src="https://www.facebook.com/tr?id=2204287590401451&ev=PageView&noscript=1"
-        alt=""
-      />
-    </noscript>
+    <!-- Meta Pixel: injetado só com consentimento 'aceito' (metaPixel.ts). -->
   </head>
   <body>
     {/* Shell estático até o island hidratar — evita flash sem overlay. */}
@@ -120,41 +84,6 @@ import "../styles/location.css"
       // Mantém o export do contrato getTracking no bundle (testes / diagnóstico).
       ;(window as Window & { __natureGetTracking?: typeof getTracking }).__natureGetTracking =
         getTracking
-    </script>
-
-    <!-- ViewContent: uma vez por page load quando o footer entra na viewport -->
-    <script is:inline>
-      ;(function () {
-        var fired = false
-        function trackViewContent() {
-          if (fired) return
-          if (typeof fbq !== "function") return
-          fired = true
-          fbq("track", "ViewContent")
-        }
-        function bind() {
-          var el = document.getElementById("site-footer")
-          if (!el || typeof IntersectionObserver !== "function") return
-          var io = new IntersectionObserver(
-            function (entries) {
-              for (var i = 0; i < entries.length; i++) {
-                if (entries[i].isIntersecting) {
-                  trackViewContent()
-                  io.disconnect()
-                  break
-                }
-              }
-            },
-            { threshold: 0.15 },
-          )
-          io.observe(el)
-        }
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", bind)
-        } else {
-          bind()
-        }
-      })()
     </script>
   </body>
 </html>

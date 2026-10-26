@@ -1,60 +1,57 @@
 import type {
-  TrackingClientPayload,
-  TrackingCreateResponse,
+  AceitePayload,
+  AcessoEntradaPayload,
+  AcessoSaidaPayload,
 } from "@nature/shared"
-import { getUtmPair } from "../../lib/utmTracking"
-import { getTrackingConsent } from "./cookieConsent"
 
-const TRACKING_ENDPOINT = "/api/tracking"
+const ENTRADA = "/api/tracking"
+const SAIDA = "/api/tracking/saida"
+const CONSENTIMENTO = "/api/tracking/consentimento"
 
-type TrackingOutboundPayload = Omit<TrackingClientPayload, "consentimento"> & {
-  /** Ignorado se enviado — o servidor de verdade é o localStorage / default negado. */
-  consentimento?: TrackingClientPayload["consentimento"]
+async function postJson(url: string, body: unknown): Promise<void> {
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      keepalive: true,
+    })
+  } catch {
+    /* silencioso */
+  }
 }
 
-/**
- * Envia evento de tracking. `consentimento` sempre vem de
- * getTrackingConsent() (localStorage ou 'negado' até o aceite explícito).
- * UTM first/last anexados automaticamente (essencial, fora do LGPD banner).
- * Meta Pixel NÃO passa por aqui.
- */
-export async function postTracking(
-  payload: TrackingOutboundPayload,
-): Promise<TrackingCreateResponse> {
-  const utms = getUtmPair()
-  const body: TrackingClientPayload = {
-    ...payload,
-    consentimento: getTrackingConsent(),
-    utm_first:
-      payload.utm_first !== undefined ? payload.utm_first : utms.utm_first,
-    utm_last:
-      payload.utm_last !== undefined ? payload.utm_last : utms.utm_last,
-  }
+export async function postEntrada(payload: AcessoEntradaPayload): Promise<void> {
+  await postJson(ENTRADA, payload)
+}
 
-  const response = await fetch(TRACKING_ENDPOINT, {
+export function postSaida(payload: AcessoSaidaPayload): void {
+  const body = JSON.stringify(payload)
+  try {
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      const blob = new Blob([body], { type: "application/json" })
+      if (navigator.sendBeacon(SAIDA, blob)) return
+    }
+  } catch {
+    /* fallback abaixo */
+  }
+  void fetch(SAIDA, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body,
     keepalive: true,
-  })
+  }).catch(() => {})
+}
 
-  let data: unknown = null
+export async function patchAceite(payload: AceitePayload): Promise<void> {
   try {
-    data = await response.json()
+    await fetch(CONSENTIMENTO, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    })
   } catch {
-    data = null
+    /* silencioso */
   }
-
-  if (!response.ok) {
-    const message =
-      data &&
-      typeof data === "object" &&
-      "error" in data &&
-      typeof (data as { error: unknown }).error === "string"
-        ? (data as { error: string }).error
-        : "Falha ao enviar tracking."
-    throw new Error(message)
-  }
-
-  return data as TrackingCreateResponse
 }

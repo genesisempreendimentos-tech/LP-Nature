@@ -1,31 +1,37 @@
-import type { TrackingConsent } from "@nature/shared"
+import type { Consentimento } from "@nature/shared"
 
 export const COOKIE_CONSENT_KEY = "nature_cookie_consent"
 export const COOKIE_CONSENT_EVENT = "nature:cookie-consent"
 
-export type CookieConsentValue = TrackingConsent
+export type CookieConsentValue = Consentimento
 
-function isConsent(value: unknown): value is CookieConsentValue {
-  return value === "aceito" || value === "negado"
+function normalizeStored(raw: string | null): CookieConsentValue | null {
+  if (raw === "aceito" || raw === "pendente" || raw === "rejeitado") return raw
+  // Legado acessos_nature
+  if (raw === "negado") return "rejeitado"
+  return null
 }
 
-/** Lê a escolha salva; `null` = ainda não decidiu. */
 export function readCookieConsent(): CookieConsentValue | null {
   if (typeof window === "undefined") return null
   try {
     const raw = window.localStorage.getItem(COOKIE_CONSENT_KEY)
-    return isConsent(raw) ? raw : null
+    const value = normalizeStored(raw)
+    // Migra 'negado' → 'rejeitado' no storage
+    if (raw === "negado" && value === "rejeitado") {
+      window.localStorage.setItem(COOKIE_CONSENT_KEY, "rejeitado")
+    }
+    return value
   } catch {
     return null
   }
 }
 
 /**
- * Valor efetivo para tracking: sem escolha → 'negado' (opt-in LGPD).
- * Não implica que o banner já tenha sido respondido.
+ * Valor efetivo para tracking: sem escolha → 'pendente' (opt-in LGPD).
  */
 export function getTrackingConsent(): CookieConsentValue {
-  return readCookieConsent() ?? "negado"
+  return readCookieConsent() ?? "pendente"
 }
 
 export function writeCookieConsent(value: CookieConsentValue): void {
@@ -33,13 +39,13 @@ export function writeCookieConsent(value: CookieConsentValue): void {
   try {
     window.localStorage.setItem(COOKIE_CONSENT_KEY, value)
   } catch {
-    // storage bloqueado — tracking segue no default 'negado'
+    // storage bloqueado — tracking segue no default 'pendente'
   }
   try {
     window.dispatchEvent(
       new CustomEvent(COOKIE_CONSENT_EVENT, { detail: { consentimento: value } }),
     )
   } catch {
-    // ignore
+    /* ignore */
   }
 }

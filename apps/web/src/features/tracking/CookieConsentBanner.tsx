@@ -10,8 +10,7 @@ const POLICIES_HREF =
 
 /**
  * Banner de cookies — não modal: página continua navegável.
- * Visual Nature (--color-accent / display / Montserrat CTA).
- * Não controla o Meta Pixel.
+ * Aceite dispara evento → tracking PATCH + Meta Pixel (runTracking / metaPixel).
  */
 export default function CookieConsentBanner() {
   const [visible, setVisible] = useState(false)
@@ -57,13 +56,15 @@ export default function CookieConsentBanner() {
             Sua privacidade é importante para nós
           </h2>
           <p className="cookie-consent-body" id="cookie-consent-body">
-            Utilizamos cookies para melhorar sua experiência, personalizar
-            conteúdo e entender como o site é utilizado. Você pode aceitar ou
-            negar cookies opcionais.
+            Usamos cookies essenciais para o site funcionar e, com o seu
+            aceite, cookies de medição (analytics) e o Meta Pixel para
+            entender visitas e campanhas. Você pode aceitar ou rejeitar os
+            opcionais.
           </p>
           <p className="cookie-consent-note" id="cookie-consent-note">
-            Cookies essenciais continuam ativos para o site funcionar. Analytics
-            só com o seu aceite.
+            Sem escolha, tratamos como pendente: registramos a visita sem IP,
+            user-agent ou id de sessão. Analytics completo e Pixel só após
+            aceitar.
           </p>
         </div>
 
@@ -78,9 +79,9 @@ export default function CookieConsentBanner() {
           <button
             type="button"
             className="cookie-consent-deny"
-            onClick={() => decide("negado")}
+            onClick={() => decide("rejeitado")}
           >
-            Negar cookies
+            Rejeitar cookies
           </button>
           <a
             className="cookie-consent-policies"
