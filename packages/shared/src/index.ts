@@ -11,16 +11,12 @@ export { LEAD_PATCH_ALLOWLIST, LEAD_PATCH_BOOLEAN_FIELDS } from "./lead"
 export type { UtmTouch, UtmPair } from "./utm"
 
 export type {
+  Consentimento,
   TrackingConsent,
-  TrackingSimpleField,
-  TrackingCompleteField,
-  TrackingClientPayload,
-  TrackingSanitizedPayload,
-  TrackingCreateResponse,
+  OrigemBruta,
+  AcessoEntradaPayload,
+  AcessoSaidaPayload,
+  AceitePayload,
 } from "./tracking"
 
-export {
-  TRACKING_CONSENT,
-  TRACKING_SIMPLE_FIELDS,
-  TRACKING_COMPLETE_FIELDS,
-} from "./tracking"
+export { CONSENTIMENTO } from "./tracking"
