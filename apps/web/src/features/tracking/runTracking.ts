@@ -8,6 +8,8 @@ import { ensureMetaPixel, trackMeta } from "../../lib/metaPixel"
 
 const SESSAO_KEY = "nature_sessao_id"
 const PAGEVIEW_KEY = "nature_pageview_id"
+/** Intervalo de amostragem: 1 seção por vez (centro da viewport). */
+const SECOES_TICK_MS = 1000
 
 type Runtime = {
   pageviewId: string
@@ -17,7 +19,6 @@ type Runtime = {
   maxScroll: number
   clicouWhatsapp: boolean
   secoesMs: Map<string, number>
-  sectionVisibleSince: Map<string, number>
   saidaEnviada: boolean
 }
 
@@ -42,21 +43,63 @@ function readScrollPct(): number {
   return Math.min(100, Math.max(0, Math.round((window.scrollY / scrollable) * 100)))
 }
 
-function flushSectionTimers(rt: Runtime, now: number) {
-  for (const [key, since] of rt.sectionVisibleSince) {
-    const add = Math.max(0, now - since)
-    rt.secoesMs.set(key, (rt.secoesMs.get(key) ?? 0) + add)
-    rt.sectionVisibleSince.set(key, now)
+/**
+ * Seção cujo retângulo contém o centro vertical da viewport.
+ * Em empate (sobreposição), fica a de menor área (mais específica).
+ */
+function secaoNoCentroViewport(): string | null {
+  const midY = window.innerHeight / 2
+  const nodes = document.querySelectorAll<HTMLElement>("[data-section]")
+  let best: { key: string; area: number } | null = null
+  for (const el of nodes) {
+    const key = el.getAttribute("data-section")
+    if (!key) continue
+    const r = el.getBoundingClientRect()
+    if (r.top <= midY && r.bottom >= midY && r.height > 0 && r.width > 0) {
+      const area = r.width * r.height
+      if (!best || area < best.area) best = { key, area }
+    }
   }
+  return best?.key ?? null
 }
 
-function buildSecoes(rt: Runtime): Record<string, number> | undefined {
-  const now = Date.now()
-  flushSectionTimers(rt, now)
+function tickSecao(rt: Runtime) {
+  if (document.visibilityState !== "visible") return
+  const key = secaoNoCentroViewport()
+  if (!key) return
+  rt.secoesMs.set(key, (rt.secoesMs.get(key) ?? 0) + SECOES_TICK_MS)
+}
+
+function buildSecoes(
+  rt: Runtime,
+  ativo_s: number,
+): Record<string, number> | undefined {
   if (rt.secoesMs.size === 0) return undefined
   const out: Record<string, number> = {}
+  let sum = 0
   for (const [k, ms] of rt.secoesMs) {
-    out[k] = Math.min(86400, Math.max(0, Math.round(ms / 1000)))
+    const s = Math.min(86400, Math.max(0, Math.round(ms / 1000)))
+    if (s <= 0) continue
+    out[k] = s
+    sum += s
+  }
+  if (Object.keys(out).length === 0) return undefined
+  // Garante soma(secoes) <= ativo_s (ticks de 1s vs ms contínuos / arredondamento).
+  if (sum > ativo_s && ativo_s >= 0 && sum > 0) {
+    const scale = ativo_s / sum
+    let adjusted = 0
+    const keys = Object.keys(out)
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i]
+      if (i === keys.length - 1) {
+        out[k] = Math.max(0, ativo_s - adjusted)
+      } else {
+        out[k] = Math.max(0, Math.floor(out[k] * scale))
+        adjusted += out[k]
+      }
+      if (out[k] === 0) delete out[k]
+    }
+    if (Object.keys(out).length === 0) return undefined
   }
   return out
 }
@@ -86,7 +129,7 @@ function sendSaida(rt: Runtime) {
     scroll_pct,
     leu_conteudo,
     clicou_whatsapp: rt.clicouWhatsapp,
-    secoes: buildSecoes(rt),
+    secoes: buildSecoes(rt, ativo_s),
   })
 }
 
@@ -127,7 +170,6 @@ export function bootTracking() {
     maxScroll: readScrollPct(),
     clicouWhatsapp: false,
     secoesMs: new Map(),
-    sectionVisibleSince: new Map(),
     saidaEnviada: false,
   }
   runtime = rt
@@ -160,8 +202,6 @@ export function bootTracking() {
         rt.activeMs += Math.max(0, now - rt.lastVisibleAt)
         rt.lastVisibleAt = null
       }
-      flushSectionTimers(rt, now)
-      rt.sectionVisibleSince.clear()
       sendSaida(rt)
     } else {
       rt.lastVisibleAt = now
@@ -188,38 +228,7 @@ export function bootTracking() {
     }
   }
 
-  const sectionObserver =
-    typeof IntersectionObserver === "function"
-      ? new IntersectionObserver(
-          (entries) => {
-            const now = Date.now()
-            for (const entry of entries) {
-              const el = entry.target as HTMLElement
-              const key = el.getAttribute("data-section")
-              if (!key) continue
-              if (entry.isIntersecting && entry.intersectionRatio > 0) {
-                if (!rt.sectionVisibleSince.has(key)) {
-                  rt.sectionVisibleSince.set(key, now)
-                }
-              } else if (rt.sectionVisibleSince.has(key)) {
-                const since = rt.sectionVisibleSince.get(key)!
-                rt.secoesMs.set(
-                  key,
-                  (rt.secoesMs.get(key) ?? 0) + Math.max(0, now - since),
-                )
-                rt.sectionVisibleSince.delete(key)
-              }
-            }
-          },
-          { threshold: [0, 0.15, 0.5] },
-        )
-      : null
-
-  if (sectionObserver) {
-    document.querySelectorAll<HTMLElement>("[data-section]").forEach((el) => {
-      sectionObserver.observe(el)
-    })
-  }
+  const secoesTimer = window.setInterval(() => tickSecao(rt), SECOES_TICK_MS)
 
   // ViewContent quando o footer entra — só se Pixel já carregado
   let viewContentFired = false
@@ -255,7 +264,7 @@ export function bootTracking() {
   window.addEventListener(COOKIE_CONSENT_EVENT, onConsent)
 
   return () => {
-    sectionObserver?.disconnect()
+    window.clearInterval(secoesTimer)
     footerObserver?.disconnect()
     window.removeEventListener("scroll", onScroll)
     window.removeEventListener("pagehide", onPageHide)
