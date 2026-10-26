@@ -44,23 +44,16 @@ function readScrollPct(): number {
 }
 
 /**
- * Seção cujo retângulo contém o centro vertical da viewport.
- * Em empate (sobreposição), fica a de menor área (mais específica).
+ * Seção mais interna sob o centro da viewport (elementFromPoint + closest).
+ * Assim hero-facts vence o hero pai quando o centro está nos facts.
  */
 function secaoNoCentroViewport(): string | null {
+  const midX = window.innerWidth / 2
   const midY = window.innerHeight / 2
-  const nodes = document.querySelectorAll<HTMLElement>("[data-section]")
-  let best: { key: string; area: number } | null = null
-  for (const el of nodes) {
-    const key = el.getAttribute("data-section")
-    if (!key) continue
-    const r = el.getBoundingClientRect()
-    if (r.top <= midY && r.bottom >= midY && r.height > 0 && r.width > 0) {
-      const area = r.width * r.height
-      if (!best || area < best.area) best = { key, area }
-    }
-  }
-  return best?.key ?? null
+  const hit = document.elementFromPoint(midX, midY)
+  if (!(hit instanceof Element)) return null
+  const section = hit.closest<HTMLElement>("[data-section]")
+  return section?.getAttribute("data-section") || null
 }
 
 function tickSecao(rt: Runtime) {
