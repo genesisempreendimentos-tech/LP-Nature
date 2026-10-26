@@ -9,6 +9,8 @@ Landing Astro (`apps/web`) + API Express (`apps/api`) + tipos compartilhados (`p
 - API: `pnpm run dev:api` → Express (porta **8787**, proxy `/api` no Astro)
 - Ambos: `pnpm run dev`
 
+Tracking unificado: `POST /api/tracking`, `POST /api/tracking/saida`, `PATCH /api/tracking/consentimento` → Supabase `acessos_user` (service_role via REST). Envs: `SUPABASE_*`, `SITE_ID`, `TRUST_PROXY` (ver `.env.example`). Meta Pixel só com consentimento `aceito`.
+
 O Vite React legado (`src/`, `vite.config.ts` na raiz) foi removido em 2026-09-11.
 
 ## Reversa

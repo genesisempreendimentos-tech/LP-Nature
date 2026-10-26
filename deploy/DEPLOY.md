@@ -17,6 +17,21 @@ O script:
 
 Não altera Nginx, portas nem `.env`.
 
+## Variáveis de tracking (`.env` na raiz / `apps/api`)
+
+Obrigatórias para gravar acessos em `public.acessos_user`:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SITE_ID` (Nature = `11`; também default no `ecosystem.config.cjs`)
+- `TRUST_PROXY=true` em produção (atrás do Nginx)
+
+Opcional: `MAXMIND_DB_PATH` (GeoLite2).
+
+Removidas (não usar mais): `PAGINA_ORIGEM` (substituída por `SITE_ID`).
+
+Segredos Supabase **não** vão no `ecosystem.config.cjs` — só no `.env`.
+
 ## Verificar
 
 ```bash
