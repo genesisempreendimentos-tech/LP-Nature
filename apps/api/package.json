@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@nature/shared": "file:../../packages/shared",
-    "@supabase/supabase-js": "^2.116.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
+    "maxmind": "^4.3.29",
     "pg": "^8.13.3"
   },
   "devDependencies": {

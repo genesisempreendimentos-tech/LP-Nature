@@ -4,6 +4,9 @@
  *   pnpm api:pm2:start && pnpm api:pm2:save
  *
  * VPS Linux: pm2 startup + comando sudo + pm2 save
+ *
+ * Segredos (SUPABASE_*, DATABASE_URL, ALLOWED_ORIGIN, API_PORT) vêm do .env —
+ * nunca versionar chaves aqui. Só defaults não-secretos de tracking.
  */
 module.exports = {
   apps: [
@@ -22,9 +25,8 @@ module.exports = {
       watch: false,
       env: {
         NODE_ENV: "production",
-        PAGINA_ORIGEM: "Página de Vendas",
-        ALLOWED_ORIGIN: "http://localhost:8443",
-        API_PORT: "8787",
+        SITE_ID: "11",
+        TRUST_PROXY: "true",
       },
     },
   ],

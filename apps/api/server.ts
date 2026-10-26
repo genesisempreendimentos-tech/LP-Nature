@@ -21,9 +21,18 @@ import {
   ORIGEM_DETALHE,
   ORIGEM_TIPO,
 } from "./leadCreateQuery.ts"
-import { parseTrackingBody, toAcessosNatureRow } from "./tracking.ts"
 import { parseUtmTouch } from "./utm.ts"
-import { getSupabaseAdmin } from "./supabase.ts"
+import {
+  extrairIp,
+  registrarAceiteConsentimento,
+  registrarEntrada,
+  registrarSaida,
+} from "./acessos/tracking.ts"
+import type {
+  AceitePayload,
+  AcessoEntradaPayload,
+  AcessoSaidaPayload,
+} from "../../packages/shared/src/tracking.ts"
 
 const monorepoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -36,8 +45,6 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
-const PAGINA_ORIGEM =
-  process.env.PAGINA_ORIGEM?.trim() || "Página de Vendas"
 // Campo do contrato PATCH → coluna em public.leads. Campos sem coluna
 // equivalente (monthly_investment, profile_completed) são ignorados.
 const PATCH_COLUMN_MAP: Partial<Record<keyof LeadPatchPayload, string>> = {
@@ -188,9 +195,36 @@ function parsePatchBody(body: Record<string, unknown>): {
   return { ok: true, data }
 }
 
+function toWebHeaders(req: express.Request): Headers {
+  const h = new Headers()
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (value === undefined) continue
+    if (Array.isArray(value)) {
+      for (const v of value) h.append(key, v)
+    } else {
+      h.set(key, value)
+    }
+  }
+  return h
+}
+
+function trackingContext(req: express.Request) {
+  return {
+    headers: toWebHeaders(req),
+    clientAddress: req.socket.remoteAddress,
+  }
+}
+
 const app = express()
+// trust proxy do Express NÃO é usado para extrairIp do tracking (ver TRUST_PROXY).
 app.set("trust proxy", 1)
-app.use(express.json({ limit: "32kb" }))
+app.use(
+  express.json({
+    limit: "32kb",
+    // sendBeacon com Blob costuma mandar text/plain ou application/json
+    type: ["application/json", "text/plain"],
+  }),
+)
 
 app.use(
   cors({
@@ -230,10 +264,17 @@ const leadPatchLimiter = rateLimit({
 })
 
 const trackingLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 60,
+  windowMs: 60 * 1000,
+  max: 40,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator(req) {
+    return (
+      extrairIp(toWebHeaders(req), req.socket.remoteAddress) ||
+      req.socket.remoteAddress ||
+      "unknown"
+    )
+  },
   message: {
     error: "Muitas tentativas. Aguarde alguns minutos e tente de novo.",
   },
@@ -328,59 +369,46 @@ app.patch("/api/leads/:id", leadPatchLimiter, async (req, res) => {
 })
 
 /**
- * Analytics / acessos — validação + INSERT em acessos_nature (Supabase).
- * `pagina_origem` só do servidor (PAGINA_ORIGEM). consentimento não é coluna.
+ * Analytics unificado → acessos_user.
+ * Erros de banco / validação: log + 204 (nunca quebra a página).
  */
 app.post("/api/tracking", trackingLimiter, async (req, res) => {
-  const parsed = parseTrackingBody(
-    (req.body && typeof req.body === "object" ? req.body : {}) as Record<
-      string,
-      unknown
-    >,
-    PAGINA_ORIGEM || null,
-  )
-
-  if (!parsed.ok || !parsed.data) {
-    return json(res, 400, { error: parsed.error ?? "Dados inválidos" })
-  }
-
-  const supabase = getSupabaseAdmin()
-  if (!supabase) {
-    return json(res, 503, {
-      error: "Tracking não configurado (Supabase). Verifique o .env da API.",
-    })
-  }
-
-  const row = toAcessosNatureRow(parsed.data)
-
   try {
-    const { data: inserted, error } = await supabase
-      .from("acessos_nature")
-      .insert(row)
-      .select("id")
-      .single()
-
-    if (error) {
-      console.error("[nature-api] INSERT acessos_nature falhou:", error)
-      return json(res, 500, {
-        error: "Erro ao registrar acesso. Tente novamente.",
-      })
-    }
-
-    return json(res, 200, {
-      ok: true,
-      persisted: true,
-      id: inserted?.id ?? row.id,
-      ...(parsed.discardedCompleteFields.length > 0
-        ? { discardedCompleteFields: parsed.discardedCompleteFields }
-        : {}),
-    })
+    await registrarEntrada(
+      (req.body ?? {}) as AcessoEntradaPayload,
+      trackingContext(req),
+    )
   } catch (err) {
     console.error("[nature-api] POST /api/tracking falhou:", err)
-    return json(res, 500, {
-      error: "Erro ao registrar acesso. Tente novamente.",
-    })
   }
+  return res.status(204).end()
+})
+
+app.post("/api/tracking/saida", trackingLimiter, async (req, res) => {
+  try {
+    await registrarSaida(
+      (req.body ?? {}) as AcessoSaidaPayload,
+      trackingContext(req),
+    )
+  } catch (err) {
+    console.error("[nature-api] POST /api/tracking/saida falhou:", err)
+  }
+  return res.status(204).end()
+})
+
+app.patch("/api/tracking/consentimento", trackingLimiter, async (req, res) => {
+  try {
+    await registrarAceiteConsentimento(
+      (req.body ?? {}) as AceitePayload,
+      trackingContext(req),
+    )
+  } catch (err) {
+    console.error(
+      "[nature-api] PATCH /api/tracking/consentimento falhou:",
+      err,
+    )
+  }
+  return res.status(204).end()
 })
 
 app.use(
@@ -398,6 +426,6 @@ app.use(
 
 app.listen(PORT, () => {
   console.log(
-    `[nature-api] POST/PATCH /api/leads + POST /api/tracking em http://localhost:${PORT} (CORS: ${ALLOWED_ORIGIN || "não definido"})`,
+    `[nature-api] leads + tracking (entrada/saida/consentimento) em http://localhost:${PORT} (CORS: ${ALLOWED_ORIGIN || "não definido"})`,
   )
 })
