@@ -2,6 +2,7 @@ node_modules/
 dist/
 build/
 .cache/
+apps/web/.astro/
 .env*
 .vite/
 vite.config.*.timestamp-*
