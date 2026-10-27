@@ -2,6 +2,8 @@
 
 Landing Astro (`apps/web`) + API Express (`apps/api`) + tipos compartilhados (`packages/shared`).
 
+Branch única: main. Não criar branches; todo commit vai direto na main.
+
 ## Desenvolvimento
 
 - Workspace: **pnpm** (`pnpm-workspace.yaml`, `.mise.toml` pin pnpm@10.34.3)
